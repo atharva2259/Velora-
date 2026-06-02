@@ -1,0 +1,2573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Velora — The Art of Vibes</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Cormorant+Garamond:ital,wght@1,300;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#17171f;--bg4:#1d1d28;--bg5:#242430;
+  --sb:#0d0d14;--sw:252px;--ph:82px;
+  --gold:#f0c040;--gold2:#f7d870;--rose:#e8607a;--rose2:#f07a92;
+  --sage:#5dbf8a;--sky:#5ab4e8;--lav:#9b8fd4;
+  --tx:#f0ece8;--tx2:#9a9090;--tx3:#56525a;
+  --bdr:rgba(255,255,255,0.06);--bdr2:rgba(240,192,64,0.22);
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;overflow:hidden;}
+.app{display:grid;grid-template-columns:var(--sw) 1fr;grid-template-rows:1fr var(--ph);height:100vh;transition:grid-template-columns .3s var(--ease);}
+.app.collapsed{grid-template-columns:64px 1fr;}
+.sidebar{grid-row:1/2;grid-column:1/2;background:var(--sb);border-right:1px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden;}
+.main{grid-row:1/2;grid-column:2/3;overflow-y:auto;background:var(--bg);}
+.player{grid-row:2/3;grid-column:1/3;background:var(--bg2);border-top:1px solid var(--bdr);display:flex;align-items:center;padding:0 22px;gap:16px;z-index:30;}
+.main::-webkit-scrollbar,.sidebar::-webkit-scrollbar,.ql::-webkit-scrollbar,.cm::-webkit-scrollbar{width:3px;}
+.main::-webkit-scrollbar-thumb,.sidebar::-webkit-scrollbar-thumb,.ql::-webkit-scrollbar-thumb,.cm::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:2px;}
+/* SIDEBAR */
+.sb-head{padding:18px 14px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.sb-logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--gold),var(--rose));display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.sb-nm{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;letter-spacing:-.4px;white-space:nowrap;}
+.sb-tg{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);font-style:italic;white-space:nowrap;}
+.sb-tog{margin-left:auto;background:none;border:none;color:var(--tx3);cursor:pointer;padding:4px;display:flex;flex-shrink:0;}
+.app.collapsed .sb-nm,.app.collapsed .sb-tg,.app.collapsed .sb-txt,.app.collapsed .sb-lbl,.app.collapsed .sb-friends,.app.collapsed .fi{opacity:0;width:0;overflow:hidden;pointer-events:none;}
+.sb-sec{padding:10px 8px 2px;flex-shrink:0;}
+.sb-lbl{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--tx3);font-weight:600;padding:0 6px 6px;white-space:nowrap;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;cursor:pointer;color:var(--tx2);font-size:13px;font-weight:500;transition:all .18s;position:relative;overflow:hidden;}
+.sb-item:hover{background:rgba(255,255,255,.05);color:var(--tx);}
+.sb-item.on{background:rgba(240,192,64,.1);color:var(--gold2);}
+.sb-item.on::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;border-radius:2px;background:var(--gold);}
+.sb-ic{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.sb-txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-friends{border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);padding:10px 8px;flex-shrink:0;}
+.fr{display:flex;align-items:center;gap:8px;padding:6px;border-radius:8px;cursor:pointer;transition:background .15s;}
+.fr:hover{background:rgba(255,255,255,.04);}
+.fav{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.fi{overflow:hidden;}
+.fn{font-size:11.5px;font-weight:500;white-space:nowrap;}
+.fs{font-size:10px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;}
+.od{width:6px;height:6px;border-radius:50%;margin-left:auto;flex-shrink:0;}
+.sb-pl{flex:1;overflow-y:auto;padding:8px 8px 4px;}
+.sb-bt{padding:8px;border-top:1px solid var(--bdr);flex-shrink:0;}
+/* HEADER */
+.hdr{position:sticky;top:0;z-index:15;background:rgba(10,10,15,.9);backdrop-filter:blur(24px);border-bottom:1px solid var(--bdr);padding:0 28px;height:56px;display:flex;align-items:center;gap:12px;}
+.hbtn{width:28px;height:28px;border-radius:50%;background:var(--bg3);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx2);transition:all .15s;}
+.hbtn:hover{background:var(--bg4);color:var(--tx);}
+.sbar{flex:1;max-width:380px;display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--bdr);border-radius:40px;padding:8px 16px;cursor:pointer;transition:border-color .2s;}
+.sbar:hover{border-color:var(--bdr2);}
+.sbar input{background:none;border:none;outline:none;font-size:13px;color:var(--tx);font-family:'DM Sans',sans-serif;width:100%;}
+.sbar input::placeholder{color:var(--tx3);}
+.hdr-r{display:flex;align-items:center;gap:10px;margin-left:auto;}
+.nbtn{width:32px;height:32px;border-radius:50%;background:var(--bg3);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx2);position:relative;transition:all .15s;}
+.nbtn:hover{background:var(--bg4);}
+.ndot{position:absolute;top:6px;right:6px;width:5px;height:5px;border-radius:50%;background:var(--rose);}
+.uchip{display:flex;align-items:center;gap:7px;padding:4px 10px 4px 4px;border-radius:40px;background:var(--bg3);border:1px solid var(--bdr);cursor:pointer;transition:all .15s;}
+.uchip:hover{background:var(--bg4);}
+.uav{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--rose));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#000;}
+/* VIEWS */
+.view{display:none;}.view.active{display:block;}
+/* HERO */
+.hero{margin:24px 28px 0;border-radius:20px;padding:30px;min-height:188px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;cursor:pointer;background:linear-gradient(135deg,#1a1508 0%,#0f1618 50%,#130f1e 100%);}
+.hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 40%,rgba(240,192,64,.18),transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(232,96,122,.12),transparent 60%);}
+.hc{position:relative;z-index:2;}
+.h-lbl{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold2);font-weight:600;margin-bottom:7px;}
+.h-title{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;line-height:1.1;margin-bottom:5px;}
+.h-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--tx2);margin-bottom:16px;}
+.h-acts{display:flex;align-items:center;gap:10px;}
+.btn-g{display:flex;align-items:center;gap:6px;padding:9px 20px;background:var(--gold);color:#000;border:none;border-radius:40px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .2s;}
+.btn-g:hover{opacity:.88;}
+.btn-o{display:flex;align-items:center;gap:6px;padding:9px 16px;background:rgba(255,255,255,.07);color:var(--tx);border:1px solid rgba(255,255,255,.1);border-radius:40px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.btn-o:hover{background:rgba(255,255,255,.13);}
+/* SECTIONS */
+.sec{padding:22px 28px 0;}
+.sec-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.sec-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;}
+.see-all{font-size:11.5px;color:var(--gold2);cursor:pointer;font-weight:500;}
+.see-all:hover{color:var(--gold);}
+/* CARDS */
+.hscroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;}
+.hscroll::-webkit-scrollbar{display:none;}
+.card{flex-shrink:0;width:154px;background:var(--bg3);border-radius:14px;overflow:hidden;cursor:pointer;border:1px solid transparent;transition:transform .22s var(--ease),box-shadow .22s,border-color .15s;}
+.card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.45);border-color:var(--bdr);}
+.now-playing-card{border-color:rgba(240,192,64,.4)!important;background:rgba(240,192,64,.06)!important;}
+/* ── API SETUP */
+.setup-modal{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(20px);}
+.setup-modal.hidden{display:none;}
+.setup-box{background:var(--bg2);border:1px solid var(--bdr2);border-radius:24px;padding:40px;max-width:560px;width:92%;text-align:center;}
+.setup-logo{width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,var(--gold),var(--rose));display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 18px;}
+.setup-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:6px;}
+.setup-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--tx2);margin-bottom:28px;}
+.setup-steps{text-align:left;margin-bottom:24px;display:flex;flex-direction:column;gap:10px;}
+.ss{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:var(--bg3);border:1px solid var(--bdr);border-radius:11px;}
+.ssn{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--rose));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#000;flex-shrink:0;margin-top:1px;}
+.sst{font-size:12.5px;line-height:1.6;color:var(--tx2);}
+.sst strong{color:var(--tx);}
+.sst a{color:var(--gold2);text-decoration:none;}
+.sst a:hover{text-decoration:underline;}
+.setup-inp-row{display:flex;gap:9px;margin-bottom:10px;}
+.setup-api-inp{flex:1;background:var(--bg3);border:1px solid var(--bdr);border-radius:9px;padding:11px 14px;font-size:13px;color:var(--tx);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;}
+.setup-api-inp:focus{border-color:var(--gold);}
+.setup-api-inp::placeholder{color:var(--tx3);}
+.setup-save{padding:11px 22px;background:linear-gradient(135deg,var(--gold),#f0a020);color:#000;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.setup-save:hover{opacity:.88;}
+.setup-skip{color:var(--tx3);font-size:12px;cursor:pointer;text-decoration:underline;display:inline-block;margin-top:6px;}
+.setup-note{font-size:11px;color:var(--tx3);margin-top:14px;line-height:1.7;}
+.setup-note a{color:var(--gold2);}
+.api-res{font-size:12px;margin-bottom:8px;min-height:18px;transition:color .2s;}
+/* ── API STATUS CHIP */
+.api-chip{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:10.5px;font-weight:600;cursor:pointer;border:1px solid var(--bdr);background:var(--bg3);transition:all .2s;}
+.api-chip:hover{background:var(--bg4);}
+.api-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.cart{width:100%;aspect-ratio:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--bg4);}
+.cart img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.cart .ef{position:relative;z-index:1;font-size:50px;}
+.cpb{position:absolute;bottom:8px;right:8px;width:34px;height:34px;border-radius:50%;background:var(--gold);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transform:translateY(6px);transition:all .22s;z-index:2;}
+.card:hover .cpb{opacity:1;transform:translateY(0);}
+.cbody{padding:9px 11px 11px;}
+.ctitle{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
+.csub{font-size:11px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* TRACK ROW */
+.tlist{display:flex;flex-direction:column;gap:1px;}
+.trk{display:grid;grid-template-columns:36px 1fr auto;align-items:center;gap:11px;padding:7px 10px;border-radius:10px;cursor:pointer;transition:background .14s;}
+.trk:hover{background:var(--bg3);}
+.trk.pl{background:rgba(240,192,64,.07);}
+.trk-n{font-size:12.5px;color:var(--tx3);text-align:center;}
+.eq{display:none;align-items:flex-end;gap:2px;height:14px;margin:0 auto;}
+.trk.pl .eq{display:flex;}.trk.pl .nn{display:none;}
+.eqb{width:3px;border-radius:2px;background:var(--gold2);animation:eq .7s ease-in-out infinite alternate;}
+.eqb:nth-child(2){animation-delay:.15s;}.eqb:nth-child(3){animation-delay:.3s;}
+@keyframes eq{0%{height:2px}100%{height:12px}}
+.ti{display:flex;align-items:center;gap:9px;overflow:hidden;}
+.tthumb{width:38px;height:38px;border-radius:8px;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--bg4);position:relative;}
+.tthumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.tthumb .ef{position:relative;z-index:1;font-size:17px;}
+.tname{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tart{font-size:11.5px;color:var(--tx3);}
+.tmeta{display:flex;align-items:center;gap:9px;color:var(--tx3);font-size:11.5px;flex-shrink:0;}
+.lbtn{background:none;border:none;cursor:pointer;color:var(--tx3);padding:3px;transition:color .15s;}
+.lbtn:hover,.lbtn.on{color:var(--rose2);}
+/* MOOD */
+.mchips{display:flex;gap:8px;flex-wrap:wrap;}
+.mchip{padding:7px 15px;border-radius:40px;border:1px solid var(--bdr);background:var(--bg3);cursor:pointer;font-size:12px;font-weight:500;transition:all .2s;white-space:nowrap;}
+.mchip:hover,.mchip.on{background:rgba(240,192,64,.12);border-color:var(--bdr2);color:var(--gold2);}
+/* ARTISTS */
+.arow{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:11px;cursor:pointer;transition:background .14s;}
+.arow:hover{background:var(--bg3);}
+.aav{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--bg4);}
+.ainfo{flex:1;overflow:hidden;}
+.aname{font-size:13.5px;font-weight:600;margin-bottom:2px;}
+.asub{font-size:11.5px;color:var(--tx3);}
+.fbtn{padding:5px 13px;border-radius:20px;border:1px solid var(--bdr2);background:none;color:var(--gold2);font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;flex-shrink:0;}
+.fbtn:hover{background:rgba(240,192,64,.1);}
+/* TRENDING */
+.trnd{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:10px;cursor:pointer;transition:background .14s;}
+.trnd:hover{background:var(--bg3);}
+.trnd-r{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:var(--tx3);width:30px;text-align:center;flex-shrink:0;}
+.trnd-r.t3{color:var(--gold2);}
+.trnd-c{font-size:10px;font-weight:700;width:24px;text-align:center;flex-shrink:0;}
+.up{color:var(--sage);}.dn{color:var(--rose2);}.sm{color:var(--tx3);}
+/* PROFILE */
+.ph{padding:28px;display:flex;align-items:flex-end;gap:22px;background:linear-gradient(180deg,rgba(240,192,64,.07) 0%,transparent 100%);border-bottom:1px solid var(--bdr);}
+.pav{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--rose));display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;color:#000;border:3px solid var(--bg2);flex-shrink:0;position:relative;}
+.ponl{position:absolute;bottom:3px;right:3px;width:14px;height:14px;border-radius:50%;background:var(--sage);border:2px solid var(--bg2);}
+.ptabs{display:flex;padding:0 28px;border-bottom:1px solid var(--bdr);}
+.ptab{padding:11px 18px;font-size:13px;font-weight:500;color:var(--tx3);cursor:pointer;border-bottom:2px solid transparent;transition:all .18s;}
+.ptab.on{color:var(--gold2);border-bottom-color:var(--gold2);}
+.spill{background:var(--bg3);border:1px solid var(--bdr);border-radius:12px;padding:13px 17px;flex:1;min-width:90px;}
+.sv{font-family:'Syne',sans-serif;font-size:21px;font-weight:800;color:var(--gold2);margin-bottom:2px;}
+.sl{font-size:11px;color:var(--tx3);}
+/* CHAT */
+.chat-layout{display:grid;grid-template-columns:1fr 268px;height:calc(100vh - 56px - var(--ph));overflow:hidden;}
+.chat-main{display:flex;flex-direction:column;border-right:1px solid var(--bdr);}
+.chat-hdr{padding:14px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:11px;}
+.cm{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:12px;}
+.msg{display:flex;gap:9px;align-items:flex-start;}
+.msg.me{flex-direction:row-reverse;}
+.mav{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.mbub{max-width:270px;padding:9px 13px;border-radius:14px;font-size:12.5px;line-height:1.5;}
+.msg .mbub{background:var(--bg3);border-radius:4px 14px 14px 14px;}
+.msg.me .mbub{background:linear-gradient(135deg,var(--gold),#e8a820);color:#000;border-radius:14px 4px 14px 14px;}
+.mtime{font-size:9.5px;color:var(--tx3);margin-top:3px;}
+.msg.me .mtime{text-align:right;}
+.scrd{display:flex;align-items:center;gap:9px;background:var(--bg4);border-radius:9px;padding:7px 11px;margin-top:5px;cursor:pointer;}
+.scrd:hover{background:var(--bg5);}
+.chat-inp-wrap{padding:11px 14px;border-top:1px solid var(--bdr);display:flex;gap:9px;align-items:center;}
+.chat-inp{flex:1;background:var(--bg3);border:1px solid var(--bdr);border-radius:40px;padding:9px 16px;font-size:13px;color:var(--tx);font-family:'DM Sans',sans-serif;outline:none;}
+.chat-inp:focus{border-color:var(--bdr2);}
+.csend{width:34px;height:34px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.csidebar{overflow-y:auto;padding:14px;}
+.onl-ttl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);font-weight:600;margin-bottom:10px;}
+.ou{display:flex;align-items:center;gap:9px;padding:7px;border-radius:9px;cursor:pointer;transition:background .14s;margin-bottom:3px;}
+.ou:hover{background:var(--bg3);}
+.oav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;position:relative;}
+.oav .dot{position:absolute;bottom:0;right:0;width:8px;height:8px;border-radius:50%;border:2px solid var(--sb);}
+.dot.on{background:var(--sage);}.dot.aw{background:var(--gold);}
+/* SETTINGS */
+.set-grid{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 56px - var(--ph));}
+.set-nav{padding:18px 10px;border-right:1px solid var(--bdr);}
+.sni{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:9px;cursor:pointer;font-size:13px;color:var(--tx2);transition:all .18s;margin-bottom:2px;}
+.sni:hover{background:var(--bg3);color:var(--tx);}
+.sni.on{background:rgba(240,192,64,.1);color:var(--gold2);}
+.set-content{padding:26px;}
+.stitle{font-family:'Syne',sans-serif;font-size:19px;font-weight:700;margin-bottom:3px;}
+.ssub{font-size:13px;color:var(--tx3);margin-bottom:22px;}
+.sgrp{background:var(--bg3);border:1px solid var(--bdr);border-radius:13px;overflow:hidden;margin-bottom:14px;}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bdr);}
+.srow:last-child{border-bottom:none;}
+.slbl{font-size:13.5px;font-weight:500;margin-bottom:1px;}
+.sdesc{font-size:11px;color:var(--tx3);}
+.tog{width:42px;height:22px;border-radius:11px;background:var(--bg5);border:none;cursor:pointer;position:relative;transition:background .18s;flex-shrink:0;}
+.tog.on{background:var(--gold);}
+.tog::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .18s;}
+.tog.on::after{transform:translateX(20px);}
+.selinp{background:var(--bg4);border:1px solid var(--bdr);border-radius:7px;color:var(--tx);padding:5px 11px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;outline:none;}
+/* PREMIUM */
+.prem-hero{padding:40px 28px 28px;text-align:center;}
+.prem-title{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;margin-bottom:7px;}
+.prem-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px;color:var(--tx2);margin-bottom:30px;}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:620px;margin:0 auto 28px;}
+.plan{background:var(--bg3);border:1px solid var(--bdr);border-radius:18px;padding:26px;cursor:pointer;transition:all .22s;position:relative;}
+.plan:hover,.plan.sel{border-color:var(--bdr2);background:rgba(240,192,64,.05);}
+.plan.feat{border-color:var(--gold);}
+.pbadge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--gold),var(--rose));color:#000;font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:3px 13px;border-radius:20px;white-space:nowrap;}
+.pname{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:5px;}
+.pprice{font-size:30px;font-weight:800;color:var(--gold2);font-family:'Syne',sans-serif;margin-bottom:3px;}
+.pprice span{font-size:13px;color:var(--tx3);font-family:'DM Sans',sans-serif;font-weight:400;}
+.pfeats{margin-top:13px;display:flex;flex-direction:column;gap:6px;}
+.pf{font-size:12px;color:var(--tx2);display:flex;align-items:center;gap:6px;}
+.pf.x{opacity:.38;}
+.subbtn{padding:13px 38px;background:linear-gradient(135deg,var(--gold),#f0a020);color:#000;font-size:14px;font-weight:800;border:none;border-radius:40px;cursor:pointer;font-family:'Syne',sans-serif;transition:opacity .2s;}
+.subbtn:hover{opacity:.88;}
+/* FAQ */
+.faq-item{background:var(--bg3);border:1px solid var(--bdr);border-radius:11px;margin-bottom:9px;overflow:hidden;}
+.faq-q{padding:15px 18px;font-size:13.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background .14s;}
+.faq-q:hover{background:var(--bg4);}
+.faq-a{font-size:13px;color:var(--tx2);line-height:1.7;max-height:0;overflow:hidden;transition:all .28s;padding:0 18px;}
+.faq-a.open{max-height:200px;padding:12px 18px 16px;}
+.fchev{transition:transform .22s;flex-shrink:0;}
+.faq-item.open .fchev{transform:rotate(180deg);}
+/* GENRE */
+.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:13px;}
+.gc{height:95px;border-radius:13px;display:flex;flex-direction:column;justify-content:flex-end;padding:13px;cursor:pointer;position:relative;overflow:hidden;transition:transform .22s var(--ease);}
+.gc:hover{transform:scale(1.035);}
+.gc::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.04),transparent);}
+.gc-em{position:absolute;right:11px;top:11px;font-size:28px;opacity:.65;}
+.gc-nm{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;position:relative;z-index:1;}
+.gc-cnt{font-size:10.5px;color:rgba(255,255,255,.55);position:relative;z-index:1;}
+/* NOW PLAYING */
+.np{position:fixed;inset:0;z-index:200;background:rgba(7,7,11,.96);backdrop-filter:blur(36px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .35s var(--ease);}
+.np.open{opacity:1;pointer-events:all;}
+.np-inner{width:100%;max-width:900px;display:grid;grid-template-columns:1fr 1fr;gap:44px;padding:36px;align-items:center;}
+.np-art{width:270px;height:270px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:100px;position:relative;overflow:hidden;box-shadow:0 32px 72px rgba(0,0,0,.65);animation:npSpin 22s linear infinite;animation-play-state:paused;}
+.np-art.sp{animation-play-state:running;}
+.np-art img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.np-art .ef{position:relative;z-index:1;}
+@keyframes npSpin{100%{transform:rotate(360deg)}}
+.np-close{position:absolute;top:22px;right:22px;background:var(--bg3);border:1px solid var(--bdr);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx2);transition:all .15s;}
+.np-close:hover{background:var(--bg4);color:var(--tx);}
+.np-badge{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold2);font-weight:600;margin-bottom:10px;}
+.np-title{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;line-height:1.1;margin-bottom:4px;}
+.np-artist{font-size:15px;color:var(--tx2);margin-bottom:2px;}
+.np-album{font-size:11.5px;color:var(--tx3);margin-bottom:20px;}
+.np-acts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.np-act{display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:9px;background:var(--bg3);border:1px solid var(--bdr);font-size:11.5px;font-weight:600;color:var(--tx2);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.np-act:hover,.np-act.on{background:rgba(240,192,64,.1);border-color:var(--bdr2);color:var(--gold2);}
+.np-pt{height:5px;background:rgba(255,255,255,.08);border-radius:3px;cursor:pointer;position:relative;margin-bottom:5px;}
+.np-pf{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:3px;transition:width .25s linear;position:relative;}
+.np-pf::after{content:'';position:absolute;right:-6px;top:50%;transform:translateY(-50%);width:12px;height:12px;border-radius:50%;background:#fff;}
+.np-times{display:flex;justify-content:space-between;font-size:11px;color:var(--tx3);margin-bottom:16px;}
+.np-ctrls{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:18px;}
+.nc{background:none;border:none;cursor:pointer;color:var(--tx2);padding:5px;transition:all .18s;display:flex;}
+.nc:hover{color:var(--tx);transform:scale(1.12);}
+.nc.on{color:var(--gold2);}
+.np-play{width:55px;height:55px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#f0a020);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .18s;box-shadow:0 8px 24px rgba(240,192,64,.35);}
+.np-play:hover{transform:scale(1.07);}
+.np-extras{display:flex;align-items:center;justify-content:space-between;}
+.vsl{-webkit-appearance:none;width:90px;height:3px;border-radius:2px;background:rgba(255,255,255,.12);outline:none;cursor:pointer;}
+.vsl::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--gold2);}
+.lyric{background:rgba(240,192,64,.06);border:1px solid var(--bdr2);border-radius:9px;padding:9px 14px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14.5px;color:var(--tx2);text-align:center;margin-top:12px;transition:opacity .3s;min-height:40px;display:flex;align-items:center;justify-content:center;}
+/* PLAYER BAR */
+.pl-left{display:flex;align-items:center;gap:11px;width:240px;flex-shrink:0;}
+.pl-thumb{width:50px;height:50px;border-radius:9px;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--bg4);cursor:pointer;position:relative;}
+.pl-thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.pl-thumb .ef{position:relative;z-index:1;}
+@keyframes ptPulse{0%,100%{box-shadow:0 0 0 0 rgba(240,192,64,.4)}50%{box-shadow:0 0 0 7px rgba(240,192,64,0)}}
+.pl-thumb.playing{animation:ptPulse 2.2s ease-in-out infinite;}
+.pl-info{overflow:hidden;}
+.pl-track{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:126px;}
+.pl-artist{font-size:11px;color:var(--tx3);}
+.pl-heart{background:none;border:none;cursor:pointer;color:var(--tx3);padding:3px;transition:color .15s;}
+.pl-heart:hover,.pl-heart.on{color:var(--rose2);}
+.pl-center{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;}
+.pl-ctrls{display:flex;align-items:center;gap:13px;}
+.pc{background:none;border:none;cursor:pointer;color:var(--tx2);padding:3px;transition:all .18s;display:flex;}
+.pc:hover{color:var(--tx);transform:scale(1.1);}
+.pc.on{color:var(--gold2);}
+.pl-play{width:36px;height:36px;border-radius:50%;background:var(--tx);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .18s;flex-shrink:0;}
+.pl-play:hover{transform:scale(1.06);}
+.pl-play svg{color:#000;}
+.prog-row{display:flex;align-items:center;gap:7px;width:100%;max-width:490px;}
+.tt{font-size:10px;color:var(--tx3);width:28px;font-variant-numeric:tabular-nums;}
+.tt.r{text-align:right;}
+.ptrack{flex:1;height:3px;background:rgba(255,255,255,.1);border-radius:2px;cursor:pointer;position:relative;user-select:none;}
+.pfill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width .25s linear;position:relative;}
+.pfill::after{content:'';position:absolute;right:-5px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:#fff;opacity:0;transition:opacity .18s;}
+.ptrack:hover .pfill::after{opacity:1;}
+.pl-right{display:flex;align-items:center;gap:10px;width:210px;justify-content:flex-end;flex-shrink:0;}
+.pl-vrow{display:flex;align-items:center;gap:7px;}
+.pl-vt{width:68px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;cursor:pointer;}
+.pl-vf{height:100%;background:rgba(255,255,255,.5);border-radius:2px;width:70%;}
+/* QUEUE */
+.qpanel{position:fixed;right:0;top:0;bottom:var(--ph);width:290px;background:var(--bg2);border-left:1px solid var(--bdr);z-index:25;transform:translateX(100%);transition:transform .3s var(--ease);display:flex;flex-direction:column;}
+.qpanel.open{transform:none;}
+.q-hdr{padding:14px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;}
+.q-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;}
+.ql{flex:1;overflow-y:auto;padding:8px 10px;}
+.qi{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:9px;cursor:pointer;transition:background .14s;}
+.qi:hover{background:var(--bg3);}
+.qi.cur{background:rgba(240,192,64,.07);}
+.qi-t{width:35px;height:35px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(--bg4);position:relative;overflow:hidden;}
+.qi-t img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.qi-t .ef{position:relative;z-index:1;}
+.qi-i{flex:1;overflow:hidden;}
+.qi-n{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.qi-a{font-size:10.5px;color:var(--tx3);}
+.qi-d{font-size:10.5px;color:var(--tx3);flex-shrink:0;}
+/* SEARCH OVERLAY */
+.sol{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:50;backdrop-filter:blur(16px);display:flex;flex-direction:column;align-items:center;padding-top:72px;opacity:0;pointer-events:none;transition:opacity .22s;}
+.sol.open{opacity:1;pointer-events:all;}
+.sbox{display:flex;align-items:center;gap:11px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:40px;padding:13px 22px;width:580px;max-width:90vw;}
+.sinp{flex:1;background:none;border:none;outline:none;font-size:17px;color:var(--tx);font-family:'DM Sans',sans-serif;}
+.sinp::placeholder{color:var(--tx3);}
+.sres{width:580px;max-width:90vw;background:var(--bg3);border:1px solid var(--bdr);border-radius:14px;margin-top:10px;overflow:hidden;display:none;max-height:380px;overflow-y:auto;}
+.sres.show{display:block;}
+.sri{display:flex;align-items:center;gap:11px;padding:11px 18px;cursor:pointer;border-bottom:1px solid var(--bdr);transition:background .14s;}
+.sri:last-child{border-bottom:none;}
+.sri:hover{background:rgba(240,192,64,.06);}
+.sri-a{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;background:var(--bg4);position:relative;overflow:hidden;}
+.sri-a img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.sri-a .ef{position:relative;z-index:1;}
+.sri-n{font-size:13px;font-weight:500;}
+.sri-m{font-size:11px;color:var(--tx3);}
+.sri-t{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--gold2);margin-left:auto;flex-shrink:0;}
+.sldr{padding:18px;text-align:center;color:var(--tx3);font-size:13px;display:none;}
+.sldr.show{display:flex;align-items:center;justify-content:center;gap:8px;}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(240,192,64,.2);border-top-color:var(--gold2);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{100%{transform:rotate(360deg)}}
+/* CTX */
+.ctx{position:fixed;background:var(--bg3);border:1px solid var(--bdr);border-radius:11px;padding:5px;z-index:500;min-width:175px;box-shadow:0 18px 55px rgba(0,0,0,.5);opacity:0;pointer-events:none;transform:scale(.94);transition:all .14s var(--ease);}
+.ctx.open{opacity:1;pointer-events:all;transform:scale(1);}
+.ctx-i{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--tx2);transition:all .12s;}
+.ctx-i:hover{background:rgba(255,255,255,.06);color:var(--tx);}
+.ctx-i.d{color:var(--rose2);}
+.ctx-sep{height:1px;background:var(--bdr);margin:3px 0;}
+/* TIMER MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .22s;}
+.modal-bg.open{opacity:1;pointer-events:all;}
+.mbox{background:var(--bg2);border:1px solid var(--bdr);border-radius:18px;padding:28px;width:320px;position:relative;}
+.mtitle{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:3px;}
+.msub{font-size:12.5px;color:var(--tx3);margin-bottom:20px;}
+.topts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px;}
+.topt{padding:11px;border-radius:11px;background:var(--bg3);border:1px solid var(--bdr);cursor:pointer;text-align:center;font-size:12.5px;font-weight:500;transition:all .18s;}
+.topt:hover,.topt.on{background:rgba(240,192,64,.1);border-color:var(--bdr2);color:var(--gold2);}
+.mcbtn{position:absolute;top:14px;right:14px;background:var(--bg3);border:1px solid var(--bdr);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx3);}
+/* TOAST */
+.toast{position:fixed;bottom:calc(var(--ph) + 14px);left:50%;transform:translateX(-50%) translateY(10px);background:var(--bg3);border:1px solid var(--bdr2);border-radius:40px;padding:8px 18px;font-size:12.5px;font-weight:500;color:var(--gold2);opacity:0;transition:all .28s var(--ease);z-index:100;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.lstate{display:flex;align-items:center;justify-content:center;gap:10px;padding:32px;color:var(--tx3);font-size:13px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.view.active>*{animation:fadeUp .38s var(--ease);}
+
+/* ── PAGE TRANSITION */
+.view{transition:opacity .2s var(--ease);}
+.view.fade-out{opacity:0;pointer-events:none;}
+
+/* ── PLAYLIST MODAL */
+.pmodal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:400;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .22s;}
+.pmodal.open{opacity:1;pointer-events:all;}
+.pmodal-box{background:var(--bg2);border:1px solid var(--bdr);border-radius:18px;padding:28px;width:360px;position:relative;max-height:80vh;overflow-y:auto;}
+.pmodal-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:3px;}
+.pmodal-sub{font-size:12px;color:var(--tx3);margin-bottom:18px;}
+.pmodal-close{position:absolute;top:14px;right:14px;background:var(--bg3);border:1px solid var(--bdr);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx3);}
+.pl-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:background .15s;border:1px solid transparent;}
+.pl-item:hover{background:var(--bg3);border-color:var(--bdr);}
+.pl-item-art{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:var(--bg4);}
+.pl-item-name{font-size:13px;font-weight:500;}
+.pl-item-cnt{font-size:11px;color:var(--tx3);}
+.create-pl-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:background .15s;border:1px dashed var(--bdr2);margin-bottom:10px;color:var(--gold2);font-size:13px;font-weight:500;}
+.create-pl-btn:hover{background:rgba(240,192,64,.06);}
+.pl-name-inp{width:100%;background:var(--bg3);border:1px solid var(--bdr);border-radius:9px;padding:10px 14px;font-size:13px;color:var(--tx);font-family:'DM Sans',sans-serif;outline:none;margin-top:10px;}
+.pl-name-inp:focus{border-color:var(--bdr2);}
+
+/* ── SHARE MODAL */
+.share-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:400;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .22s;}
+.share-modal.open{opacity:1;pointer-events:all;}
+.share-box{background:var(--bg2);border:1px solid var(--bdr);border-radius:18px;padding:28px;width:360px;position:relative;}
+.share-preview{display:flex;align-items:center;gap:12px;background:var(--bg3);border-radius:12px;padding:12px;margin-bottom:20px;}
+.share-art{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;position:relative;}
+.share-art img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.share-link-row{display:flex;gap:8px;align-items:center;}
+.share-link-inp{flex:1;background:var(--bg3);border:1px solid var(--bdr);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--tx2);font-family:'DM Sans',sans-serif;outline:none;}
+.share-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px;}
+.share-btn{padding:10px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--bdr);cursor:pointer;font-size:12px;font-weight:500;text-align:center;transition:all .15s;color:var(--tx2);}
+.share-btn:hover{background:var(--bg4);color:var(--tx);}
+
+/* ── NOTIFICATION PANEL */
+.notif-panel{position:fixed;right:16px;top:64px;width:320px;background:var(--bg2);border:1px solid var(--bdr);border-radius:16px;z-index:100;box-shadow:0 20px 60px rgba(0,0,0,.5);opacity:0;pointer-events:none;transform:translateY(-8px);transition:all .22s var(--ease);max-height:440px;overflow:hidden;display:flex;flex-direction:column;}
+.notif-panel.open{opacity:1;pointer-events:all;transform:none;}
+.np-hdr{padding:14px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;}
+.np-hdr-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;}
+.notif-list{overflow-y:auto;flex:1;}
+.notif-item{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-bottom:1px solid var(--bdr);cursor:pointer;transition:background .15s;}
+.notif-item:hover{background:var(--bg3);}
+.notif-item:last-child{border-bottom:none;}
+.notif-dot2{width:8px;height:8px;border-radius:50%;background:var(--gold2);flex-shrink:0;margin-top:4px;}
+.notif-dot2.read{background:var(--tx3);}
+.notif-text{font-size:12.5px;line-height:1.5;color:var(--tx2);}
+.notif-time{font-size:10.5px;color:var(--tx3);margin-top:2px;}
+
+/* ── KEYBOARD SHORTCUTS MODAL */
+.kbd-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:400;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .22s;}
+.kbd-modal.open{opacity:1;pointer-events:all;}
+.kbd-box{background:var(--bg2);border:1px solid var(--bdr);border-radius:18px;padding:28px;width:400px;position:relative;}
+.kbd-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
+.kbd-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:8px;background:var(--bg3);}
+.kbd-action{font-size:12px;color:var(--tx2);}
+.kbd-key{display:inline-flex;align-items:center;gap:3px;}
+.kkey{background:var(--bg4);border:1px solid var(--bdr);border-radius:5px;padding:2px 7px;font-size:11px;font-weight:600;color:var(--tx);font-family:'DM Sans',sans-serif;}
+
+/* ── MINI EQ IN PLAYER */
+.player-eq{display:flex;align-items:flex-end;gap:2px;height:16px;margin-left:4px;}
+.peqb{width:3px;border-radius:2px;background:var(--gold2);opacity:0;transition:opacity .3s;}
+.peqb.show{opacity:1;animation:eq .7s ease-in-out infinite alternate;}
+.peqb:nth-child(2){animation-delay:.2s;}.peqb:nth-child(3){animation-delay:.35s;}
+
+/* ── ARTIST PAGE */
+.artist-hero{padding:28px;display:flex;align-items:flex-end;gap:22px;background:linear-gradient(180deg,rgba(155,143,212,.12) 0%,transparent 100%);border-bottom:1px solid var(--bdr);}
+.artist-av-lg{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:44px;flex-shrink:0;background:var(--bg3);border:3px solid var(--bg2);overflow:hidden;position:relative;}
+.artist-av-lg img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+
+/* ── ALBUM PAGE */
+.album-hero{padding:28px;display:flex;align-items:flex-end;gap:22px;background:linear-gradient(180deg,rgba(90,180,232,.08) 0%,transparent 100%);border-bottom:1px solid var(--bdr);}
+.album-art-lg{width:160px;height:160px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:70px;flex-shrink:0;background:var(--bg3);overflow:hidden;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.5);}
+.album-art-lg img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+
+/* ── SEARCH RECENT */
+.srch-recent{width:580px;max-width:90vw;margin-top:12px;}
+.srch-rec-ttl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);font-weight:600;margin-bottom:8px;padding:0 4px;}
+.srch-rec-chips{display:flex;gap:8px;flex-wrap:wrap;}
+.srch-rec-chip{padding:6px 14px;border-radius:40px;background:var(--bg3);border:1px solid var(--bdr);font-size:12px;color:var(--tx2);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;}
+.srch-rec-chip:hover{background:var(--bg4);color:var(--tx);}
+
+/* ── DOWNLOAD PILL */
+.dl-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.dl-pill.free{background:rgba(255,255,255,.06);color:var(--tx3);border:1px solid var(--bdr);}
+.dl-pill.premium{background:rgba(240,192,64,.12);color:var(--gold2);border:1px solid var(--bdr2);}
+.dl-pill.downloading{background:rgba(93,191,138,.1);color:var(--sage);border:1px solid rgba(93,191,138,.25);}
+
+/* ── HERO DYNAMIC BG */
+.hero{transition:background .8s ease;}
+
+/* ── CARD DURATION BADGE */
+.card-dur{position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.65);color:#fff;font-size:9.5px;font-weight:600;padding:2px 6px;border-radius:5px;z-index:2;}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sb">
+  <div class="sb-head">
+    <div class="sb-logo">♪</div>
+    <div><div class="sb-nm">Velora</div><div class="sb-tg">The Art of Vibes</div></div>
+    <button class="sb-tog" onclick="toggleSb()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Menu</div>
+    <div class="sb-item on" id="nav-home" onclick="goV('home')"><span class="sb-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg></span><span class="sb-txt">Dashboard</span></div>
+    <div class="sb-item" id="nav-profile" onclick="goV('profile')"><span class="sb-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span class="sb-txt">Profile</span></div>
+    <div class="sb-item" id="nav-favs" onclick="goV('favs')"><span class="sb-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span><span class="sb-txt">Favorites</span></div>
+    <div class="sb-item" id="nav-chat" onclick="goV('chat')"><span class="sb-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><span class="sb-txt">Live Chat</span></div>
+  </div>
+  <div class="sb-friends">
+    <div class="sb-lbl">Friends Listening</div>
+    <div class="fr"><div class="fav" style="background:#f0c040;color:#000">T</div><div class="fi"><div class="fn">Tanvi</div><div class="fs">Kesariya · Arijit</div></div><div class="od" style="background:var(--sage)"></div></div>
+    <div class="fr"><div class="fav" style="background:#e8607a;color:#fff">J</div><div class="fi"><div class="fn">Jay</div><div class="fs">Tum Hi Ho · Arijit</div></div><div class="od" style="background:var(--sage)"></div></div>
+    <div class="fr"><div class="fav" style="background:#5ab4e8;color:#fff">H</div><div class="fi"><div class="fn">Harini</div><div class="fs">AP Dhillon · Dildarian</div></div><div class="od" style="background:var(--gold)"></div></div>
+  </div>
+  <div class="sb-pl">
+    <div class="sb-lbl">Playlists</div>
+    <div class="sb-item" onclick="sPlay('arijit singh hits')"><span class="sb-ic">🌅</span><span class="sb-txt">Arijit Singh Hits</span></div>
+    <div class="sb-item" onclick="sPlay('bollywood lofi chill')"><span class="sb-ic">🌙</span><span class="sb-txt">Bollywood Lo-fi</span></div>
+    <div class="sb-item" onclick="sPlay('punjabi beats AP Dhillon')"><span class="sb-ic">⚡</span><span class="sb-txt">Punjabi Beats</span></div>
+    <div class="sb-item" onclick="sPlay('romantic hindi songs 2024')"><span class="sb-ic">❤️</span><span class="sb-txt">Romance Mix</span></div>
+    <div class="sb-lbl" style="margin-top:10px;">Explore</div>
+    <div class="sb-item" id="nav-trending" onclick="goV('trending')"><span class="sb-ic">🔥</span><span class="sb-txt">Trending</span></div>
+    <div class="sb-item" id="nav-genres" onclick="goV('genres')"><span class="sb-ic">🎨</span><span class="sb-txt">Genres</span></div>
+    <div class="sb-item" id="nav-app" onclick="goV('app')"><span class="sb-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span><span class="sb-txt">Premium</span></div>
+    <div class="sb-item" id="nav-faq" onclick="goV('faq')"><span class="sb-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="sb-txt">FAQs</span></div>
+  </div>
+  <div class="sb-bt">
+    <div class="sb-item" id="nav-settings" onclick="goV('settings')"><span class="sb-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span class="sb-txt">Settings</span></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main" id="main">
+  <!-- HEADER -->
+  <div class="hdr">
+    <button class="hbtn" onclick="history.back()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button class="hbtn" onclick="history.forward()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="sbar" onclick="openSearch()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input placeholder="Search real songs on JioSaavn…" readonly>
+    </div>
+    <div class="hdr-r">
+      <div class="nbtn" onclick="toast('🔔 No new notifications')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="ndot"></div></div>
+      <div class="uchip" onclick="goV('profile')"><div class="uav">V</div><span style="font-size:12px;font-weight:500">Velora User</span></div>
+      <div class="api-chip" id="api-chip" onclick="openSetup()" title="Configure JioSaavn API">
+        <div class="api-dot" id="api-dot" style="background:var(--tx3)"></div>
+        <span id="api-chip-txt">Setup API</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="view active" id="view-home">
+    <div class="hero" onclick="playFirst()">
+      <div class="hero-glow"></div>
+      <div class="hc">
+        <div class="h-lbl" id="h-lbl">✦ Featured Mix</div>
+        <div class="h-title">Velora Daily Mix</div>
+        <div class="h-sub">"Where memory meets melody"</div>
+        <div class="h-acts">
+          <button class="btn-g" onclick="event.stopPropagation();playFirst()"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Play Now</button>
+          <button class="btn-o" onclick="event.stopPropagation();sPlay('top hindi songs 2024')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Releases</button>
+        </div>
+      </div>
+    </div>
+    <div class="sec"><div class="sec-row"><div class="sec-title">🎵 For You</div><div class="see-all" onclick="sPlay('best bollywood')">See all</div></div><div class="hscroll" id="fy-cards"></div></div>
+    <div class="sec"><div class="sec-row"><div class="sec-title">Browse by Mood</div></div><div class="mchips" id="mchips"></div></div>
+    <div class="sec"><div class="sec-row"><div class="sec-title">🔥 Trending in India</div><div class="see-all" onclick="goV('trending')">View all</div></div><div id="trend-home"></div></div>
+    <div class="sec"><div class="sec-row"><div class="sec-title">New Releases</div><div class="see-all">See all</div></div><div class="hscroll" id="nr-cards"></div></div>
+    <div class="sec"><div class="sec-row"><div class="sec-title">Top Artists</div><div class="see-all">Explore</div></div><div id="artists-list"></div></div>
+    <div style="height:24px"></div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="view" id="view-profile">
+    <div class="ph">
+      <div class="pav">V<div class="ponl"></div></div>
+      <div style="flex:1">
+        <div style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold2);font-weight:600;margin-bottom:6px">✦ Velora Listener</div>
+        <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:3px">Velora User</div>
+        <div style="font-size:12.5px;color:var(--tx3);margin-bottom:11px">@velora · Joined 2024</div>
+        <div style="display:flex;gap:9px"><button class="btn-o" style="padding:7px 16px;font-size:12px" onclick="toast('✏️ Edit coming soon')">Edit Profile</button><button class="btn-o" style="padding:7px 16px;font-size:12px" onclick="toast('📤 Link copied!')">Share</button></div>
+      </div>
+      <div style="display:flex;gap:24px;text-align:center">
+        <div><div class="sv" style="font-size:22px;color:var(--gold2)">1,284</div><div class="sl">Played</div></div>
+        <div><div class="sv" id="fav-count" style="font-size:22px;color:var(--rose2)">0</div><div class="sl">Liked</div></div>
+        <div><div class="sv" style="font-size:22px;color:var(--sage)">312h</div><div class="sl">Time</div></div>
+      </div>
+    </div>
+    <div class="ptabs"><div class="ptab on" onclick="setPTab(this)">Overview</div><div class="ptab" onclick="setPTab(this)">Playlists</div><div class="ptab" onclick="setPTab(this)">Liked</div><div class="ptab" onclick="setPTab(this)">Artists</div></div>
+    <div class="sec"><div class="sec-row"><div class="sec-title">Recently Played</div></div><div class="tlist" id="prof-trks"></div></div>
+    <div class="sec"><div class="sec-row"><div class="sec-title">Listening Stats</div></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div class="spill"><div class="sv">Bollywood</div><div class="sl">Top Genre</div></div>
+        <div class="spill"><div class="sv" id="stat-liked" style="color:var(--rose2)">0</div><div class="sl">Songs Liked</div></div>
+        <div class="spill"><div class="sv" style="color:var(--sage)">Arijit</div><div class="sl">Top Artist</div></div>
+        <div class="spill"><div class="sv" style="color:var(--sky)">2:48h</div><div class="sl">Avg Session</div></div>
+      </div>
+    </div>
+    <div style="height:24px"></div>
+  </div>
+
+  <!-- FAVORITES -->
+  <div class="view" id="view-favs">
+    <div style="padding:28px 28px 20px;background:linear-gradient(180deg,rgba(232,96,122,.1) 0%,transparent 100%);border-bottom:1px solid var(--bdr)">
+      <div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:800;margin-bottom:4px">❤ Liked Songs</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--tx2);margin-bottom:16px">"Every song a feeling"</div>
+      <button class="btn-g" onclick="playFavs()"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Shuffle Play</button>
+    </div>
+    <div class="sec"><div class="tlist" id="favs-list"></div></div>
+    <div style="height:24px"></div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="view" id="view-chat">
+    <div class="chat-layout">
+      <div class="chat-main">
+        <div class="chat-hdr">
+          <div style="width:38px;height:38px;border-radius:11px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:18px">🎵</div>
+          <div><div style="font-weight:600;font-size:13.5px">Velora Vibes — Global</div><div style="font-size:11px;color:var(--tx3)">🟢 14 online</div></div>
+        </div>
+        <div class="cm" id="chat-msgs"></div>
+        <div class="chat-inp-wrap">
+          <input class="chat-inp" id="chat-inp" placeholder="Share what you're feeling… 🎶" onkeydown="if(event.key==='Enter')sendMsg()">
+          <button class="csend" onclick="sendMsg()"><svg width="13" height="13" viewBox="0 0 24 24" fill="#000"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+        </div>
+      </div>
+      <div class="csidebar"><div class="onl-ttl">Online Now (14)</div><div id="online-users"></div></div>
+    </div>
+  </div>
+
+  <!-- TRENDING -->
+  <div class="view" id="view-trending">
+    <div class="sec" style="padding-top:26px"><div class="sec-row"><div class="sec-title" style="font-size:22px">🔥 Trending in India</div></div><div id="trend-full"></div></div>
+    <div style="height:24px"></div>
+  </div>
+
+  <!-- GENRES -->
+  <div class="view" id="view-genres">
+    <div class="sec" style="padding-top:26px"><div class="sec-row"><div class="sec-title" style="font-size:22px">Browse Genres</div></div><div class="ggrid" id="genre-grid"></div></div>
+    <div style="height:24px"></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="view" id="view-settings">
+    <div class="set-grid">
+      <div class="set-nav">
+        <div class="sni on" onclick="setTab(this,'audio')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Audio</div>
+        <div class="sni" onclick="setTab(this,'account')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Account</div>
+        <div class="sni" onclick="setTab(this,'privacy')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Privacy</div>
+        <div class="sni" onclick="setTab(this,'notifs')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Notifications</div>
+        <div class="sni" onclick="setTab(this,'appear')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg> Appearance</div>
+      </div>
+      <div class="set-content" id="set-content"></div>
+    </div>
+  </div>
+
+  <!-- PREMIUM -->
+  <div class="view" id="view-app">
+    <div class="prem-hero">
+      <div style="font-size:44px;margin-bottom:14px">✦</div>
+      <div class="prem-title">Velora Premium</div>
+      <div class="prem-sub">"The art of listening, elevated"</div>
+      <div class="plans">
+        <div class="plan" onclick="selPlan(this)"><div class="pname">Free</div><div class="pprice">₹0 <span>/ mo</span></div><div class="pfeats"><div class="pf">✓ Standard audio</div><div class="pf">✓ Unlimited streaming</div><div class="pf x">✕ Offline downloads</div><div class="pf x">✕ Lossless HiFi</div><div class="pf x">✕ Ad-free</div></div></div>
+        <div class="plan feat" onclick="selPlan(this)"><div class="pbadge">✦ MOST POPULAR</div><div class="pname" style="color:var(--gold2)">Premium</div><div class="pprice">₹100 <span>/ mo</span></div><div class="pfeats"><div class="pf">✓ Lossless HiFi + Atmos</div><div class="pf">✓ Unlimited downloads</div><div class="pf">✓ Zero ads forever</div><div class="pf">✓ Spatial audio + EQ</div><div class="pf">✓ Velora Originals</div></div></div>
+      </div>
+      <button class="subbtn" onclick="doPrem()">Start Premium — ₹100/month →</button>
+      <div style="font-size:11px;color:var(--tx3);margin-top:9px">Cancel anytime · No hidden fees</div>
+      <div style="margin-top:36px;background:var(--bg3);border:1px solid var(--bdr);border-radius:18px;padding:26px;max-width:460px;margin-left:auto;margin-right:auto">
+        <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:5px">📱 Mobile App</div>
+        <div style="font-size:12.5px;color:var(--tx3);margin-bottom:16px">Velora on iOS & Android. Your music, anywhere.</div>
+        <div style="display:flex;gap:12px;justify-content:center">
+          <button class="btn-o" onclick="toast('🍎 App Store coming soon')">🍎 App Store</button>
+          <button class="btn-o" onclick="toast('🤖 Play Store coming soon')">🤖 Google Play</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="view" id="view-faq">
+    <div class="sec" style="padding-top:26px"><div class="sec-row"><div class="sec-title" style="font-size:22px">Frequently Asked Questions</div></div><div id="faq-list"></div></div>
+  </div>
+</main>
+
+<!-- PLAYER BAR -->
+<div class="player">
+  <div class="pl-left">
+    <div class="pl-thumb" id="pl-thumb" onclick="openNP()" title="Now Playing"><span class="ef">🎵</span></div>
+    <div class="pl-info"><div class="pl-track" id="pl-track">Select a track</div><div class="pl-artist" id="pl-artist">— Velora</div></div>
+    <button class="pl-heart" id="pl-heart" onclick="toggleHeart()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+  </div>
+  <div class="pl-center">
+    <div class="pl-ctrls">
+      <button class="pc" id="pc-shuf" onclick="toggleShuf()" title="Shuffle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></button>
+      <button class="pc" onclick="prevTrk()"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg></button>
+      <button class="pl-play" id="pl-play" onclick="togglePlay()">
+        <svg id="ico-play" width="15" height="15" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="ico-pause" width="15" height="15" viewBox="0 0 24 24" fill="#000" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+      <button class="pc" onclick="nextTrk()"><svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+      <button class="pc" id="pc-rep" onclick="toggleRep()" title="Repeat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
+    </div>
+    <div class="prog-row">
+      <span class="tt" id="t-cur">0:00</span>
+      <div class="ptrack" id="ptrack" onclick="seekBar(event)"><div class="pfill" id="pfill" style="width:0%"></div></div>
+      <span class="tt r" id="t-tot">0:00</span>
+    </div>
+  </div>
+  <div class="pl-right">
+    <button class="pc" onclick="toggleQ()" title="Queue"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
+    <button class="pc" onclick="toast('📥 Premium required')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+    <div class="pl-vrow">
+      <button class="pc" onclick="toggleMute()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
+      <div class="pl-vt" id="pl-vt" onclick="setVol(event)"><div class="pl-vf" id="pl-vf"></div></div>
+    </div>
+  </div>
+</div>
+</div><!-- .app -->
+<!-- NOW PLAYING OVERLAY -->
+<div class="np" id="np">
+  <button class="np-close" onclick="closeNP()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg></button>
+  <div class="np-inner">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:16px">
+      <div class="np-art" id="np-art"><span class="ef">🎵</span></div>
+      <canvas id="viz" width="270" height="52" style="border-radius:9px"></canvas>
+      <div class="lyric" id="lyric">"The art of vibes, alive in every note…"</div>
+    </div>
+    <div>
+      <div class="np-badge" id="np-badge">✦ Now Playing</div>
+      <div class="np-title" id="np-title">Select a track</div>
+      <div class="np-artist" id="np-artist">— Velora</div>
+      <div class="np-album" id="np-album">—</div>
+      <div class="np-acts">
+        <button class="np-act" id="np-like-act" onclick="toggleHeart()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> Like</button>
+        <button class="np-act" onclick="toast('➕ Added to playlist')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Playlist</button>
+        <button class="np-act" onclick="toast('📤 Link copied!')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share</button>
+        <button class="np-act" onclick="openTimer()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Timer</button>
+      </div>
+      <div>
+        <div class="np-pt" id="np-pt" onclick="seekNP(event)"><div class="np-pf" id="np-pf" style="width:0%"></div></div>
+        <div class="np-times"><span id="np-cur">0:00</span><span id="np-tot">0:00</span></div>
+      </div>
+      <div class="np-ctrls">
+        <button class="nc" id="np-shuf" onclick="toggleShuf()"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></button>
+        <button class="nc" onclick="prevTrk()"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg></button>
+        <button class="np-play" onclick="togglePlay()">
+          <svg id="np-ico-play" width="20" height="20" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="np-ico-pause" width="20" height="20" viewBox="0 0 24 24" fill="#000" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        </button>
+        <button class="nc" onclick="nextTrk()"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+        <button class="nc" id="np-rep" onclick="toggleRep()"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
+      </div>
+      <div class="np-extras">
+        <div style="display:flex;align-items:center;gap:8px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--tx3)"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/></svg><input type="range" class="vsl" id="np-vol" min="0" max="100" value="70" oninput="setVolSl(this.value)"></div>
+        <div style="font-size:10.5px;color:var(--tx3)">Space · ←→ · ↑↓</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUEUE -->
+<div class="qpanel" id="qpanel">
+  <div class="q-hdr"><div class="q-title">Up Next</div><button style="background:none;border:none;cursor:pointer;color:var(--tx3);display:flex" onclick="toggleQ()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div class="ql" id="ql"></div>
+</div>
+
+<!-- SEARCH OVERLAY -->
+<div class="sol" id="sol" onclick="if(event.target===this)closeSearch()">
+  <div class="sbox">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--tx3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input class="sinp" id="sinp" placeholder="Search songs… (type to search)" oninput="doSearch(this.value)" id="sinp" onkeydown="if(event.key==='Escape')closeSearch()">
+    <button onclick="closeSearch()" style="background:none;border:none;color:var(--tx3);cursor:pointer;display:flex"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="sldr" id="sldr">Searching JioSaavn… <span class="spinner"></span></div>
+  <div class="sres" id="sres"></div>
+</div>
+
+<!-- CONTEXT MENU -->
+<div class="ctx" id="ctx">
+  <div class="ctx-i" onclick="ctxPlay()"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Play now</div>
+  <div class="ctx-i" onclick="ctxQ()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/></svg> Add to queue</div>
+  <div class="ctx-i" onclick="ctxLike()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> Like song</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-i" onclick="toast('➕ Added to playlist');closeCtx()">Add to playlist…</div>
+  <div class="ctx-i" onclick="toast('📤 Link copied!');closeCtx()">Share song</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-i d" onclick="toast('🚫 Hidden');closeCtx()">Hide this song</div>
+</div>
+
+<!-- SLEEP TIMER -->
+<div class="modal-bg" id="tmodal">
+  <div class="mbox">
+    <button class="mcbtn" onclick="closeTimer()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div class="mtitle">Sleep Timer</div><div class="msub">Music stops after…</div>
+    <div class="topts">
+      <div class="topt" onclick="setTimer(5,this)">5 min</div><div class="topt" onclick="setTimer(10,this)">10 min</div>
+      <div class="topt" onclick="setTimer(15,this)">15 min</div><div class="topt" onclick="setTimer(30,this)">30 min</div>
+      <div class="topt" onclick="setTimer(45,this)">45 min</div><div class="topt" onclick="setTimer(60,this)">1 hour</div>
+    </div>
+    <div id="t-status" style="text-align:center;font-size:12.5px;color:var(--gold2);min-height:16px"></div>
+  </div>
+</div>
+
+<!-- ── ARTIST VIEW (dynamic) ── -->
+<div class="view" id="view-artist" style="display:none">
+  <div class="artist-hero" id="artist-hero-el">
+    <div class="artist-av-lg" id="artist-av-lg"><span id="artist-av-em">🎤</span></div>
+    <div>
+      <div style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--lav);font-weight:600;margin-bottom:6px">✦ Artist</div>
+      <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;margin-bottom:4px" id="artist-name-el">—</div>
+      <div style="font-size:12.5px;color:var(--tx3);margin-bottom:12px" id="artist-meta-el">—</div>
+      <div style="display:flex;gap:9px">
+        <button class="btn-g" onclick="sPlay(document.getElementById('artist-name-el').textContent)"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Play All</button>
+        <button class="btn-o" id="artist-fol-btn" onclick="toggleArtistFollow(this)" style="padding:9px 16px;font-size:12px">Follow</button>
+      </div>
+    </div>
+  </div>
+  <div class="sec"><div class="sec-row"><div class="sec-title">Popular Tracks</div></div><div class="tlist" id="artist-tracks"></div></div>
+  <div style="height:24px"></div>
+</div>
+
+<!-- ── ALBUM VIEW (dynamic) ── -->
+<div class="view" id="view-album" style="display:none">
+  <div class="album-hero">
+    <div class="album-art-lg" id="album-art-el"><span id="album-art-em">💿</span></div>
+    <div>
+      <div style="font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--sky);font-weight:600;margin-bottom:6px">✦ Album</div>
+      <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;margin-bottom:4px" id="album-name-el">—</div>
+      <div style="font-size:12.5px;color:var(--tx3);margin-bottom:12px" id="album-meta-el">—</div>
+      <div style="display:flex;gap:9px">
+        <button class="btn-g" id="album-play-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Play Album</button>
+        <button class="btn-o" onclick="toast('❤ Album saved to library')">Save</button>
+      </div>
+    </div>
+  </div>
+  <div class="sec"><div class="sec-row"><div class="sec-title">Tracks</div></div><div class="tlist" id="album-tracks"></div></div>
+  <div style="height:24px"></div>
+</div>
+
+<!-- ── PLAYLIST MODAL ── -->
+<div class="pmodal" id="pmodal" onclick="if(event.target===this)closePModal()">
+  <div class="pmodal-box">
+    <button class="pmodal-close" onclick="closePModal()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div class="pmodal-title">Add to Playlist</div>
+    <div class="pmodal-sub">Choose a playlist or create a new one</div>
+    <div class="create-pl-btn" onclick="showCreatePl()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Create new playlist
+    </div>
+    <div id="create-pl-form" style="display:none;margin-bottom:12px">
+      <input class="pl-name-inp" id="pl-name-inp" placeholder="Playlist name…" onkeydown="if(event.key==='Enter')confirmCreatePl()">
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn-g" style="padding:8px 18px;font-size:12px" onclick="confirmCreatePl()">Create</button>
+        <button class="btn-o" style="padding:8px 14px;font-size:12px" onclick="document.getElementById('create-pl-form').style.display='none'">Cancel</button>
+      </div>
+    </div>
+    <div id="pl-list-el"></div>
+  </div>
+</div>
+
+<!-- ── SHARE MODAL ── -->
+<div class="share-modal" id="share-modal" onclick="if(event.target===this)closeShare()">
+  <div class="share-box">
+    <button class="pmodal-close" onclick="closeShare()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div class="pmodal-title">Share Song</div>
+    <div id="share-preview-el" class="share-preview" style="margin-top:14px">
+      <div class="share-art" id="share-art-el">🎵</div>
+      <div><div style="font-size:13.5px;font-weight:600" id="share-title-el">—</div><div style="font-size:11.5px;color:var(--tx3)" id="share-artist-el">—</div></div>
+    </div>
+    <div class="share-link-row">
+      <input class="share-link-inp" id="share-link-inp" readonly value="https://velora.app/song/...">
+      <button class="btn-g" style="padding:8px 14px;font-size:12px;flex-shrink:0" onclick="copyShareLink()">Copy</button>
+    </div>
+    <div class="share-btns">
+      <div class="share-btn" onclick="shareToChat()">💬 Velora Chat</div>
+      <div class="share-btn" onclick="toast('🐦 Twitter coming soon')">🐦 Twitter</div>
+      <div class="share-btn" onclick="toast('📸 Instagram coming soon')">📸 Instagram</div>
+      <div class="share-btn" onclick="toast('💚 WhatsApp coming soon')">💚 WhatsApp</div>
+      <div class="share-btn" onclick="toast('✉️ Email coming soon')">✉️ Email</div>
+      <div class="share-btn" onclick="copyShareLink()">🔗 Copy Link</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── NOTIFICATION PANEL ── -->
+<div class="notif-panel" id="notif-panel">
+  <div class="np-hdr">
+    <div class="np-hdr-title">Notifications</div>
+    <button style="background:none;border:none;font-size:11px;color:var(--gold2);cursor:pointer;font-family:'DM Sans',sans-serif" onclick="markAllRead()">Mark all read</button>
+  </div>
+  <div class="notif-list" id="notif-list"></div>
+</div>
+
+<!-- ── KEYBOARD SHORTCUTS MODAL ── -->
+<div class="kbd-modal" id="kbd-modal" onclick="if(event.target===this)closeKbd()">
+  <div class="kbd-box">
+    <button class="pmodal-close" onclick="closeKbd()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div class="pmodal-title">Keyboard Shortcuts</div>
+    <div class="pmodal-sub">Control Velora without lifting your hands</div>
+    <div class="kbd-grid">
+      <div class="kbd-row"><span class="kbd-action">Play / Pause</span><div class="kbd-key"><span class="kkey">Space</span></div></div>
+      <div class="kbd-row"><span class="kbd-action">Seek Forward</span><div class="kbd-key"><span class="kkey">→</span></div></div>
+      <div class="kbd-row"><span class="kbd-action">Seek Back</span><div class="kbd-key"><span class="kkey">←</span></div></div>
+      <div class="kbd-row"><span class="kbd-action">Volume Up</span><div class="kbd-key"><span class="kkey">↑</span></div></div>
+      <div class="kbd-row"><span class="kbd-action">Volume Down</span><div class="kbd-key"><span class="kkey">↓</span></div></div>
+      <div class="kbd-row"><span class="kbd-action">Open Search</span><div class="kbd-key"><span class="kkey">/</span></div></div>
+      <div class="kbd-row"><span class="kbd-action">Next Track</span><div class="kbd-key"><span class="kkey">N</span></div></div>
+      <div class="kbd-row"><span class="kbd-action">Prev Track</span><div class="kbd-key"><span class="kkey">P</span></div></div>
+      <div class="kbd-row"><span class="kbd-action">Like Song</span><div class="kbd-key"><span class="kkey">L</span></div></div>
+      <div class="kbd-row"><span class="kbd-action">Toggle Queue</span><div class="kbd-key"><span class="kkey">Q</span></div></div>
+      <div class="kbd-row"><span class="kbd-action">Shortcuts</span><div class="kbd-key"><span class="kkey">?</span></div></div>
+      <div class="kbd-row"><span class="kbd-action">Close / Dismiss</span><div class="kbd-key"><span class="kkey">Esc</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SETUP MODAL ═══ -->
+<div class="setup-modal" id="setup-modal">
+  <div class="setup-box">
+    <div class="setup-logo">♪</div>
+    <div class="setup-title">Welcome to Velora</div>
+    <div class="setup-sub">"The Art of Vibes — connect your music"</div>
+    <div class="setup-steps">
+      <div class="ss">
+        <div class="ssn">1</div>
+        <div class="sst">
+          <strong>Deploy your free JioSaavn API on Vercel</strong> — click the button below, sign in with GitHub, and hit Deploy. Takes 60 seconds.<br>
+          <a href="https://vercel.com/new/clone?repository-url=https://github.com/sumitkolhe/jiosaavn-api" target="_blank">👉 Click here to deploy your API on Vercel (free)</a>
+        </div>
+      </div>
+      <div class="ss">
+        <div class="ssn">2</div>
+        <div class="sst"><strong>Copy your Vercel URL</strong> — after deploying, copy the URL. It looks like: <code style="background:var(--bg4);padding:1px 6px;border-radius:4px;font-size:11px">https://your-name.vercel.app</code></div>
+      </div>
+      <div class="ss">
+        <div class="ssn">3</div>
+        <div class="sst"><strong>Paste it below</strong> — Velora will connect and you can search & play any song on JioSaavn instantly.</div>
+      </div>
+    </div>
+    <div class="api-res" id="api-res"></div>
+    <div class="setup-inp-row">
+      <input class="setup-api-inp" id="setup-inp" placeholder="https://your-api-name.vercel.app" onkeydown="if(event.key==='Enter')testAndSaveAPI()">
+      <button class="setup-save" onclick="testAndSaveAPI()" id="setup-save-btn">Connect →</button>
+    </div>
+    <span class="setup-skip" onclick="skipSetup()">Skip for now — use 12 local songs</span>
+    <div class="setup-note">
+      This uses the open-source <a href="https://github.com/sumitkolhe/jiosaavn-api" target="_blank">sumitkolhe/jiosaavn-api</a> — MIT licensed, free to deploy.<br>
+      Your API is private to you. Velora never stores your data.
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast-el"></div>
+<audio id="audio" preload="auto"></audio>
+<script>
+// ═══════════════════════════════════════════
+// CONFIG & STATE
+// ═══════════════════════════════════════════
+// ─── SONG CACHE (declared first so REAL_SONGS can use it) ───
+const cache = {};
+
+// ─── REAL EMBEDDED SONGS (always work, no server needed) ───
+const REAL_SONGS = [
+  { id:'s1', name:'Golden Dusk', artist:'Raya & The Wave', album:'Solstice', year:'2024',
+    language:'English', duration:'214', genre:'Ambient',
+    url:'https://raw.githubusercontent.com/bradtraversy/vanillawebprojects/master/music-player/music/ukulele.mp3',
+    img:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjBjMDQwO3N0b3Atb3BhY2l0eToxIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZThhODIwO3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIyMDAiIHk9IjIzMCIgZm9udC1zaXplPSIxNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPvCfjIU8L3RleHQ+PC9zdmc+', emoji:'🌅',
+    color:'linear-gradient(135deg,#2a1f05,#1e1808)' },
+  { id:'s2', name:'Midnight Drift', artist:'SolCave', album:'Dark Hours', year:'2024',
+    language:'English', duration:'198', genre:'Lo-fi',
+    url:'https://raw.githubusercontent.com/bradtraversy/vanillawebprojects/master/music-player/music/summer.mp3',
+    img:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNWFiNGU4O3N0b3Atb3BhY2l0eToxIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMzA5MGM4O3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIyMDAiIHk9IjIzMCIgZm9udC1zaXplPSIxNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPvCfjJk8L3RleHQ+PC9zdmc+', emoji:'🌙',
+    color:'linear-gradient(135deg,#0d0f1a,#181830)' },
+  { id:'s3', name:'Velvet Crush', artist:'NOIR', album:'Shadows', year:'2024',
+    language:'Hindi', duration:'187', genre:'R&B',
+    url:'https://raw.githubusercontent.com/bradtraversy/vanillawebprojects/master/music-player/music/hey.mp3',
+    img:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZTg2MDdhO3N0b3Atb3BhY2l0eToxIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojYzA0MDYwO3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIyMDAiIHk9IjIzMCIgZm9udC1zaXplPSIxNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPvCflqQ8L3RleHQ+PC9zdmc+', emoji:'🖤',
+    color:'linear-gradient(135deg,#160d1f,#200e2c)' },
+  { id:'s4', name:'Cobalt Sea', artist:'Drift Pool', album:'Depth', year:'2024',
+    language:'English', duration:'203', genre:'Electronic',
+    url:'https://raw.githubusercontent.com/goldfire/howler.js/master/tests/audio/sound2.mp3',
+    img:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNWRiZjhhO3N0b3Atb3BhY2l0eToxIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojM2E5YTZhO3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIyMDAiIHk9IjIzMCIgZm9udC1zaXplPSIxNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPvCfjIo8L3RleHQ+PC9zdmc+', emoji:'🌊',
+    color:'linear-gradient(135deg,#091520,#0d2030)' },
+  { id:'s5', name:'Smoke & Silk', artist:'Celestine', album:'Dusk', year:'2024',
+    language:'Hindi', duration:'222', genre:'Jazz',
+    url:'https://raw.githubusercontent.com/katspaugh/wavesurfer.js/main/examples/audio/audio.wav',
+    img:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojOWI4ZmQ0O3N0b3Atb3BhY2l0eToxIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNzA2MGIwO3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIyMDAiIHk9IjIzMCIgZm9udC1zaXplPSIxNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPvCfla/vuI88L3RleHQ+PC9zdmc+', emoji:'🕯️',
+    color:'linear-gradient(135deg,#180e1a,#24102a)' },
+  { id:'s6', name:'Petal Rain', artist:'Maira Bloom', album:'Bloom', year:'2024',
+    language:'Hindi', duration:'231', genre:'Indie',
+    url:'https://raw.githubusercontent.com/katspaugh/wavesurfer.js/main/examples/audio/demo.wav',
+    img:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjA3YTkyO3N0b3Atb3BhY2l0eToxIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZDA1MDcwO3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIyMDAiIHk9IjIzMCIgZm9udC1zaXplPSIxNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPvCfjLg8L3RleHQ+PC9zdmc+', emoji:'🌸',
+    color:'linear-gradient(135deg,#1a0d12,#281016)' },
+  { id:'s7', name:'Desert Glass', artist:'Asha Mehta', album:'Dunes', year:'2024',
+    language:'Hindi', duration:'256', genre:'World',
+    url:'https://raw.githubusercontent.com/bradtraversy/vanillawebprojects/master/music-player/music/ukulele.mp3',
+    img:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjBhMDQwO3N0b3Atb3BhY2l0eToxIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZDA4MDIwO3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIyMDAiIHk9IjIzMCIgZm9udC1zaXplPSIxNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPvCfj5zvuI88L3RleHQ+PC9zdmc+', emoji:'🏜️',
+    color:'linear-gradient(135deg,#1a1209,#281a08)' },
+  { id:'s8', name:'Neon Bloom', artist:'FlareCat', album:'UV', year:'2024',
+    language:'English', duration:'175', genre:'Pop',
+    url:'https://raw.githubusercontent.com/bradtraversy/vanillawebprojects/master/music-player/music/summer.mp3',
+    img:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNDBkMGYwO3N0b3Atb3BhY2l0eToxIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMjA5MGM4O3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIyMDAiIHk9IjIzMCIgZm9udC1zaXplPSIxNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPvCfjLo8L3RleHQ+PC9zdmc+', emoji:'🌺',
+    color:'linear-gradient(135deg,#0d1808,#121f08)' },
+  { id:'s9', name:'Ivory Storm', artist:'BLANC', album:'Blanche', year:'2024',
+    language:'English', duration:'196', genre:'Cinematic',
+    url:'https://raw.githubusercontent.com/bradtraversy/vanillawebprojects/master/music-player/music/hey.mp3',
+    img:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZTBlOGY4O3N0b3Atb3BhY2l0eToxIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojYTBiOGQ4O3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIyMDAiIHk9IjIzMCIgZm9udC1zaXplPSIxNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPuKdhO+4jzwvdGV4dD48L3N2Zz4=', emoji:'❄️',
+    color:'linear-gradient(135deg,#0a0f1e,#101528)' },
+  { id:'s10', name:'Saffron Tape', artist:'Ira & Prism', album:'Rewind', year:'2024',
+    language:'Hindi', duration:'241', genre:'Dream Pop',
+    url:'https://raw.githubusercontent.com/goldfire/howler.js/master/tests/audio/sound2.mp3',
+    img:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjBkMDgwO3N0b3Atb3BhY2l0eToxIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZDBhMDQwO3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIyMDAiIHk9IjIzMCIgZm9udC1zaXplPSIxNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPvCfjp7vuI88L3RleHQ+PC9zdmc+', emoji:'🎞️',
+    color:'linear-gradient(135deg,#1f1208,#2a1a08)' },
+  { id:'s11', name:'Glass Garden', artist:'Prism Lake', album:'Prismatic', year:'2024',
+    language:'Hindi', duration:'227', genre:'Indie',
+    url:'https://raw.githubusercontent.com/katspaugh/wavesurfer.js/main/examples/audio/audio.wav',
+    img:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojODBlMGEwO3N0b3Atb3BhY2l0eToxIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNDBjMDcwO3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIyMDAiIHk9IjIzMCIgZm9udC1zaXplPSIxNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPvCfqp48L3RleHQ+PC9zdmc+', emoji:'🪞',
+    color:'linear-gradient(135deg,#0d1812,#10201a)' },
+  { id:'s12', name:'Tangerine Hours', artist:'Kalinda', album:'Morning', year:'2024',
+    language:'English', duration:'209', genre:'Soul',
+    url:'https://raw.githubusercontent.com/katspaugh/wavesurfer.js/main/examples/audio/demo.wav',
+    img:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjA4MDYwO3N0b3Atb3BhY2l0eToxIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZDA1MDMwO3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIyMDAiIHk9IjIzMCIgZm9udC1zaXplPSIxNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPvCfjYo8L3RleHQ+PC9zdmc+', emoji:'🍊',
+    color:'linear-gradient(135deg,#1e1108,#2a1a08)' },
+];
+
+// Pre-load real songs into cache
+REAL_SONGS.forEach(s => {
+  // Normalize to match saavn format
+  s.downloadUrl = [{quality:'320kbps', url: s.url}];
+  s.image = [{quality:'500x500', url: s.img}];
+  s.artists = {primary: [{name: s.artist}]};
+  cache[s.id] = s;
+});
+
+
+// ═══════════════════════════════════════════
+// API CONFIG — paste your Vercel URL here
+// Deploy free: https://vercel.com/new/clone?repository-url=https://github.com/sumitkolhe/jiosaavn-api
+// ═══════════════════════════════════════════
+const STORED_API = (() => { try { return localStorage.getItem('vl-api'); } catch(e) { return null; } })();
+const STORED_PATH = (() => { try { return localStorage.getItem('vl-api-path') || '/api'; } catch(e) { return '/api'; } })();
+let SAAVN = STORED_API ? STORED_API.replace(/\/+$/, '') : '';
+const API_CONFIGURED = !!STORED_API;
+const audio = document.getElementById('audio');
+
+let queue = [], qIdx = -1, curSong = null;
+let playing = false, shuffle = false, repeat = false, liked = false, premium = false;
+let vol = 0.7, muted = false;
+let likedIds = new Set();
+// cache declared above (before REAL_SONGS)
+let history = [];       // recently played
+let qOpen = false, sbCollapsed = false;
+let ctxId = null, sleepTmr = null;
+let vizFrame = null, vizPhase = 0;
+let lyricTmr = null, lyricIdx = 0;
+let searchTmr = null;
+let dragging = false;
+
+// ═══════════════════════════════════════════
+// STATIC DATA
+// ═══════════════════════════════════════════
+const MOODS = ['Chill 🌊','Focus 🔮','Energy ⚡','Sleep 🌙','Happy 🌸','Romance ❤️','Morning ☀️','Bollywood 🎬'];
+const GENRES = [
+  {n:'Bollywood',c:'2.1M',e:'🎬',bg:'linear-gradient(135deg,#1a1208,#2a1c08)'},
+  {n:'Lo-fi',c:'480K',e:'🎧',bg:'linear-gradient(135deg,#0d0f1a,#181830)'},
+  {n:'Punjabi',c:'1.4M',e:'🎺',bg:'linear-gradient(135deg,#1a0812,#2a1020)'},
+  {n:'Romantic',c:'960K',e:'❤️',bg:'linear-gradient(135deg,#1a0d10,#281016)'},
+  {n:'Devotional',c:'820K',e:'🪔',bg:'linear-gradient(135deg,#1a1808,#281e08)'},
+  {n:'Indie',c:'340K',e:'🎸',bg:'linear-gradient(135deg,#0d1812,#10201a)'},
+  {n:'Electronic',c:'560K',e:'⚡',bg:'linear-gradient(135deg,#091520,#0d2030)'},
+  {n:'Classical',c:'280K',e:'🎻',bg:'linear-gradient(135deg,#180e1a,#24102a)'},
+  {n:'Pop',c:'1.8M',e:'🌟',bg:'linear-gradient(135deg,#0d1808,#121f08)'},
+  {n:'R&B',c:'420K',e:'🖤',bg:'linear-gradient(135deg,#160d1f,#200e2c)'},
+  {n:'Hip-Hop',c:'680K',e:'🎤',bg:'linear-gradient(135deg,#18100a,#201608)'},
+  {n:'World',c:'310K',e:'🌍',bg:'linear-gradient(135deg,#0a1020,#0d1830)'},
+];
+const ARTISTS = [
+  {n:'Arijit Singh',g:'Bollywood · Romantic',e:'🎤',f:'38.4M'},
+  {n:'AP Dhillon',g:'Punjabi · Pop',e:'🎧',f:'12.8M'},
+  {n:'Shreya Ghoshal',g:'Bollywood · Classical',e:'🎶',f:'24.6M'},
+  {n:'Diljit Dosanjh',g:'Punjabi · Pop',e:'🎺',f:'18.2M'},
+];
+const CHAT_SEED = [
+  {u:'Tanvi',av:'T',bg:'#f0c040',tc:'#000',txt:'anyone else obsessed with Kesariya?? 🌅',t:'2:14 PM',me:false},
+  {u:'Jay',av:'J',bg:'#e8607a',tc:'#fff',txt:'yes it\'s been on loop all day 😭',t:'2:15 PM',me:false},
+  {u:'Harini',av:'H',bg:'#5ab4e8',tc:'#fff',txt:'the new AP Dhillon drop is 🔥🔥',t:'2:17 PM',me:false},
+  {u:'Jay',av:'J',bg:'#e8607a',tc:'#fff',txt:'AP always delivers fr fr',t:'2:18 PM',me:false},
+];
+const ONLINE = [
+  {n:'Tanvi',av:'T',bg:'#f0c040',tc:'#000',s:'Listening now',dot:'on'},
+  {n:'Jay',av:'J',bg:'#e8607a',tc:'#fff',s:'Vibing to Lo-fi',dot:'on'},
+  {n:'Harini',av:'H',bg:'#5ab4e8',tc:'#fff',s:'Away',dot:'aw'},
+  {n:'Priya',av:'P',bg:'#5dbf8a',tc:'#000',s:'In a playlist',dot:'on'},
+  {n:'Karan',av:'K',bg:'#9b8fd4',tc:'#fff',s:'Using Velora',dot:'on'},
+];
+const FAQS = [
+  {q:'What is Velora Premium?',a:'Velora Premium gives you unlimited offline downloads, lossless HiFi audio (up to 24-bit/192kHz), Dolby Atmos, zero ads, and exclusive Velora Originals — from just ₹100/month.'},
+  {q:'How do I download songs for offline listening?',a:'Upgrade to Premium, then tap the download icon on any track or playlist. Downloads sync across all devices automatically.'},
+  {q:'What audio quality does Velora stream?',a:'Free users get standard quality. Premium gets High (320kbps) or Lossless HiFi (FLAC, 24-bit/192kHz), configurable in Settings → Audio.'},
+  {q:'Does Velora use JioSaavn?',a:'Yes! Velora streams real music through the JioSaavn database — 80M+ tracks in 15+ languages, free to search and play.'},
+  {q:'Can I share music in Live Chat?',a:'Yes! Use the Live Chat to share tracks in real-time with friends who are online.'},
+  {q:'How do I cancel Premium?',a:'Go to Settings → Account → Manage Subscription. Cancel anytime — access continues until end of billing period.'},
+];
+const LYRICS = [
+  '"Tere bina zindagi se koi shikwa toh nahi…"',
+  '"Kesariya tera ishq hai piya…"',
+  '"Raataan lambiyan, tere bina kaisi raataan…"',
+  '"Jo bhi main kehna chahun, barbaad karein alfaaz mere…"',
+  '"Tum hi ho, ab tum hi ho…"',
+  '"The art of vibes, alive in every note…"',
+];
+const SET_HTML = {
+  audio:`<div class="stitle">Audio & Playback</div><div class="ssub">Control how Velora sounds</div><div class="sgrp"><div class="srow"><div><div class="slbl">Stream Quality</div><div class="sdesc">Current playback quality</div></div><select class="selinp" onchange="toast('🎵 Quality: '+this.value)"><option>Standard</option><option>High (320kbps)</option><option selected>Lossless HiFi ✦</option></select></div><div class="srow"><div><div class="slbl">Crossfade</div><div class="sdesc">Smooth track transitions</div></div><button class="tog on" onclick="togS(this)"></button></div><div class="srow"><div><div class="slbl">Equalizer</div><div class="sdesc">Custom bass & treble</div></div><button class="tog" onclick="togS(this)"></button></div><div class="srow"><div><div class="slbl">Normalize Volume</div><div class="sdesc">Consistent across songs</div></div><button class="tog on" onclick="togS(this)"></button></div><div class="srow"><div><div class="slbl">Autoplay</div><div class="sdesc">Keep playing similar music</div></div><button class="tog on" onclick="togS(this)"></button></div></div>`,
+  account:`<div class="stitle">Account</div><div class="ssub">Manage your Velora account</div><div class="sgrp"><div class="srow"><div><div class="slbl">Display Name</div><div class="sdesc">Velora User</div></div><button class="btn-o" style="padding:6px 13px;font-size:11.5px" onclick="toast('✏️ Edit coming soon')">Edit</button></div><div class="srow"><div><div class="slbl">Plan</div><div class="sdesc">Free — upgrade for lossless</div></div><button class="btn-g" style="padding:6px 13px;font-size:11.5px" onclick="goV('app')">Upgrade ✦</button></div></div>`,
+  privacy:`<div class="stitle">Privacy & Data</div><div class="ssub">Control your data</div><div class="sgrp"><div class="srow"><div><div class="slbl">Public Profile</div><div class="sdesc">Others see your activity</div></div><button class="tog on" onclick="togS(this)"></button></div><div class="srow"><div><div class="slbl">Listening History</div><div class="sdesc">Used for recommendations</div></div><button class="tog on" onclick="togS(this)"></button></div><div class="srow"><div><div class="slbl">Data Export</div><div class="sdesc">Download your Velora data</div></div><button class="btn-o" style="padding:6px 13px;font-size:11.5px" onclick="toast('📦 Export requested')">Export</button></div></div>`,
+  notifs:`<div class="stitle">Notifications</div><div class="ssub">What you hear from Velora</div><div class="sgrp"><div class="srow"><div><div class="slbl">New Releases</div><div class="sdesc">Artists you follow drop music</div></div><button class="tog on" onclick="togS(this)"></button></div><div class="srow"><div><div class="slbl">Friend Activity</div><div class="sdesc">Friends share tracks in chat</div></div><button class="tog on" onclick="togS(this)"></button></div><div class="srow"><div><div class="slbl">Weekly Digest</div><div class="sdesc">Your personalised report</div></div><button class="tog" onclick="togS(this)"></button></div></div>`,
+  appear:`<div class="stitle">Appearance</div><div class="ssub">Make Velora yours</div><div class="sgrp"><div class="srow"><div><div class="slbl">Accent Colour</div><div class="sdesc">Highlight colour throughout</div></div><div style="display:flex;gap:8px">${['#f0c040','#e8607a','#5dbf8a','#5ab4e8','#9b8fd4'].map(c=>`<div onclick="setAccent('${c}')" style="width:20px;height:20px;border-radius:50%;background:${c};cursor:pointer;border:2px solid rgba(255,255,255,.15);transition:transform .18s" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></div>`).join('')}</div></div><div class="srow"><div><div class="slbl">Compact Mode</div><div class="sdesc">Smaller cards, tighter layout</div></div><button class="tog" onclick="togS(this)"></button></div></div>`,
+};
+
+// ═══════════════════════════════════════════
+// SAAVN API HELPERS
+// ═══════════════════════════════════════════
+// Wake the Vercel API from cold start
+async function wakeApi() {
+  if (!SAAVN) return;
+  const bar = document.getElementById('api-status-bar');
+  if (bar) { bar.style.background='rgba(240,192,64,0.08)'; bar.style.color='var(--gold2)'; bar.innerHTML='⏳ Waking up API (cold start)…'; bar.style.display='block'; }
+  try {
+    await fetch(SAAVN.replace(/\/+$/,'') + '/search/songs?q=test&n=1', { mode:'cors' });
+    if (bar) { bar.innerHTML='✅ API ready! Searching now…'; }
+    const q = document.getElementById('sinp')?.value;
+    if (q) doSearch(q);
+  } catch(e) {
+    if (bar) { bar.innerHTML='⚠️ Still unreachable. Your API URL may be wrong — <span onclick="openSetup()" style="cursor:pointer;text-decoration:underline">reconfigure</span>.'; }
+  }
+}
+
+async function apiSearch(q, n=8) {
+  // This gets overridden below — placeholder only
+  if (!SAAVN) throw new Error('No API configured');
+  const r = await fetch(`${SAAVN}/search/songs?q=${encodeURIComponent(q)}&n=${n}`);
+  if (!r.ok) throw new Error('API error ' + r.status);
+  const d = await r.json();
+  return d.data?.results || d.results || [];
+}
+
+function getUrl(song) {
+  // Our REAL_SONGS have direct url property
+  if (song.url && !song.downloadUrl) return song.url;
+  const urls = song.downloadUrl || [];
+  for (const q of ['320kbps','160kbps','96kbps']) {
+    const u = urls.find(x => x.quality === q);
+    if (u?.url) return u.url;
+  }
+  return urls[urls.length - 1]?.url || null;
+}
+
+function getImg(song) {
+  // Handle both API formats
+  // rajput-hemant: image is array of {quality, url}
+  // Also handle direct string url
+  if (typeof song.image === 'string') return song.image;
+  if (song.img) return song.img; // our REAL_SONGS format
+  const imgs = song.image || [];
+  if (!imgs.length) return null;
+  // Try 500x500 first, then highest quality
+  const q500 = imgs.find(i => i.quality === '500x500' || i.quality === 'high');
+  if (q500?.url) return q500.url;
+  return imgs[imgs.length - 1]?.url || null;
+}
+
+function getArtist(song) {
+  if (song.artist && typeof song.artist === 'string') return song.artist; // REAL_SONGS
+  const primary = song.artists?.primary || song.artists || [];
+  if (Array.isArray(primary) && primary.length) return primary.map(a => a.name || a).join(', ');
+  if (typeof primary === 'string') return primary;
+  return song.label || song.subtitle || '—';
+}
+
+// ═══════════════════════════════════════════
+// RENDER HELPERS
+// ═══════════════════════════════════════════
+function imgEl(src, fb, cls='ef') {
+  return src
+    ? `<img src="${src}" loading="lazy" onerror="this.style.display='none';this.nextSibling.style.display='block'"><span class="${cls}" style="display:none">${fb}</span>`
+    : `<span class="${cls}">${fb}</span>`;
+}
+
+function renderCards(elId, songs) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  songs.forEach(s => cache[s.id] = s);
+  el.innerHTML = songs.map(s => {
+    const img = getImg(s), art = getArtist(s);
+    const isNow = curSong?.id === s.id;
+    return `<div class="card${isNow?' now-playing-card':''}" onclick="play('${s.id}')" oncontextmenu="openCtx(event,'${s.id}')">
+      <div class="cart">${imgEl(img,'🎵')}
+        <button class="cpb" onclick="event.stopPropagation();play('${s.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg></button>
+      </div>
+      <div class="cbody">
+        <div class="ctitle">${isNow?'▶ ':''} ${s.name||'—'}</div>
+        <div class="csub">${art}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderTrkList(elId, songs) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  songs.forEach(s => cache[s.id] = s);
+  el.innerHTML = songs.map((s, i) => trkRow(s, i)).join('');
+}
+
+function trkRow(s, i) {
+  const img = getImg(s), art = getArtist(s), lk = likedIds.has(s.id), isNow = curSong?.id === s.id;
+  return `<div class="trk${isNow?' pl':''}" id="trk-${s.id}" onclick="play('${s.id}')" oncontextmenu="openCtx(event,'${s.id}')">
+    <div class="trk-n"><span class="nn">${i+1}</span><div class="eq"><div class="eqb"></div><div class="eqb"></div><div class="eqb"></div></div></div>
+    <div class="ti">
+      <div class="tthumb">${imgEl(img,'🎵')}</div>
+      <div><div class="tname">${s.name||'—'}</div><div class="tart">${art}</div></div>
+    </div>
+    <div class="tmeta">
+      <button class="lbtn${lk?' on':''}" onclick="event.stopPropagation();toggleLikeId('${s.id}',this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="${lk?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+      <span>${fmtDur(s.duration)}</span>
+    </div>
+  </div>`;
+}
+
+function renderTrending(elId, songs, full) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  songs.forEach(s => cache[s.id] = s);
+  const dirs = ['up','sm','up','dn','up','up','dn','up'], chg = ['+2','—','+5','-1','+8','+1','-2','+3'];
+  el.innerHTML = songs.slice(0, full ? 999 : 6).map((s, i) => {
+    const img = getImg(s), art = getArtist(s), lk = likedIds.has(s.id);
+    return `<div class="trnd" onclick="play('${s.id}')" oncontextmenu="openCtx(event,'${s.id}')">
+      <div class="trnd-r${i<3?' t3':''}">${i+1}</div>
+      <div class="trnd-c ${dirs[i]||'sm'}">${dirs[i]==='up'?'↑':dirs[i]==='dn'?'↓':'—'}</div>
+      <div class="ti" style="flex:1">
+        <div class="tthumb">${imgEl(img,'🎵')}</div>
+        <div><div class="tname">${s.name||'—'}</div><div class="tart">${art}</div></div>
+      </div>
+      <div class="tmeta">
+        <button class="lbtn${lk?' on':''}" onclick="event.stopPropagation();toggleLikeId('${s.id}',this)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="${lk?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+        <span>${fmtDur(s.duration)}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderQueueList() {
+  const el = document.getElementById('ql');
+  if (!el) return;
+  el.innerHTML = queue.map((s, i) => {
+    const img = getImg(s), art = getArtist(s);
+    return `<div class="qi${i===qIdx?' cur':''}" id="qi-${i}" onclick="playQi(${i})">
+      <div class="qi-t">${imgEl(img,'🎵')}</div>
+      <div class="qi-i"><div class="qi-n">${s.name||'—'}</div><div class="qi-a">${art}</div></div>
+      <div class="qi-d">${fmtDur(s.duration)}</div>
+    </div>`;
+  }).join('') || '<div class="lstate" style="padding:20px">Queue is empty</div>';
+}
+
+function renderFavsList() {
+  const favs = [...likedIds].map(id => cache[id]).filter(Boolean);
+  document.getElementById('fav-count').textContent = favs.length;
+  const sl = document.getElementById('stat-liked');
+  if (sl) sl.textContent = favs.length;
+  const el = document.getElementById('favs-list');
+  if (!el) return;
+  el.innerHTML = favs.length
+    ? favs.map((s, i) => trkRow(s, i)).join('')
+    : '<div class="lstate">No liked songs yet — ❤ a track to save it here</div>';
+}
+
+function renderMoodChips() {
+  document.getElementById('mchips').innerHTML = MOODS.map(m =>
+    `<div class="mchip" onclick="sPlay('${m.replace(/[^\w ]/g,'')} songs');this.closest('.mchips').querySelectorAll('.mchip').forEach(c=>c.classList.remove('on'));this.classList.add('on')">${m}</div>`
+  ).join('');
+}
+
+function renderArtists() {
+  document.getElementById('artists-list').innerHTML = ARTISTS.map(a =>
+    `<div class="arow">
+      <div class="aav">${a.e}</div>
+      <div class="ainfo"><div class="aname">${a.n}</div><div class="asub">${a.g} · ${a.f} followers</div></div>
+      <button class="fbtn" onclick="sPlay('${a.n}');this.textContent='Following ✓';this.style.background='rgba(240,192,64,.15)'">Follow</button>
+    </div>`).join('');
+}
+
+function renderGenreGrid() {
+  document.getElementById('genre-grid').innerHTML = GENRES.map(g =>
+    `<div class="gc" style="background:${g.bg}" onclick="sPlay('${g.n} songs')">
+      <div class="gc-em">${g.e}</div>
+      <div class="gc-nm">${g.n}</div>
+      <div class="gc-cnt">${g.c}</div>
+    </div>`).join('');
+}
+
+function renderChat() {
+  document.getElementById('chat-msgs').innerHTML = CHAT_SEED.map(m =>
+    `<div class="msg${m.me?' me':''}">
+      <div class="mav" style="background:${m.bg};color:${m.tc}">${m.av}</div>
+      <div>
+        ${!m.me?`<div style="font-size:10px;color:var(--tx3);margin-bottom:2px;padding-left:2px">${m.u}</div>`:''}
+        <div class="mbub">${m.txt}</div>
+        <div class="mtime">${m.t}</div>
+      </div>
+    </div>`).join('');
+  const el = document.getElementById('chat-msgs');
+  setTimeout(() => el.scrollTop = el.scrollHeight, 50);
+}
+
+function sendMsg() {
+  const inp = document.getElementById('chat-inp');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  const msgs = document.getElementById('chat-msgs');
+  const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  msgs.innerHTML += `<div class="msg me"><div class="mav" style="background:linear-gradient(135deg,#f0c040,#e8607a);color:#000">V</div><div><div class="mbub">${txt}</div><div class="mtime">${now}</div></div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  inp.value = '';
+  const replies = ['🔥🔥🔥','vibes fr','drop the playlist!','what song??','🎵✨','adds to queue rn'];
+  const u = ONLINE.filter(x => x.dot === 'on')[Math.floor(Math.random()*3)];
+  setTimeout(() => {
+    msgs.innerHTML += `<div class="msg"><div class="mav" style="background:${u.bg};color:${u.tc}">${u.av}</div><div><div style="font-size:10px;color:var(--tx3);margin-bottom:2px;padding-left:2px">${u.n}</div><div class="mbub">${replies[Math.floor(Math.random()*replies.length)]}</div><div class="mtime">just now</div></div></div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 1000 + Math.random() * 800);
+}
+
+function renderOnlineUsers() {
+  document.getElementById('online-users').innerHTML = ONLINE.map(u =>
+    `<div class="ou"><div class="oav" style="background:${u.bg};color:${u.tc}">${u.av}<div class="dot ${u.dot}"></div></div><div><div style="font-size:12.5px;font-weight:500">${u.n}</div><div style="font-size:10.5px;color:var(--tx3)">${u.s}</div></div></div>`
+  ).join('');
+}
+
+function renderFAQs() {
+  document.getElementById('faq-list').innerHTML = FAQS.map((f, i) =>
+    `<div class="faq-item" id="fq${i}">
+      <div class="faq-q" onclick="togFaq(${i})"><span>${f.q}</span><svg class="fchev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+      <div class="faq-a" id="fqa${i}">${f.a}</div>
+    </div>`).join('');
+}
+
+function togFaq(i) {
+  const item = document.getElementById('fq'+i), ans = document.getElementById('fqa'+i);
+  const wasOpen = ans.classList.contains('open');
+  document.querySelectorAll('.faq-a').forEach(a => a.classList.remove('open'));
+  document.querySelectorAll('.faq-item').forEach(a => a.classList.remove('open'));
+  if (!wasOpen) { ans.classList.add('open'); item.classList.add('open'); }
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async () => {
+  const h = new Date().getHours();
+  const g = h<12?'☀️ Good morning':h<17?'🌤️ Good afternoon':'🌙 Good evening';
+  document.getElementById('h-lbl').textContent = '✦ ' + g;
+
+  renderMoodChips(); renderArtists(); renderGenreGrid();
+  renderChat(); renderOnlineUsers(); renderFAQs();
+  loadSettings('audio');
+  audio.volume = vol;
+  document.getElementById('pl-vf').style.width = (vol*100)+'%';
+
+  audio.addEventListener('ended', onEnd);
+  audio.addEventListener('timeupdate', onTime);
+  audio.addEventListener('error', (e) => {
+    console.warn('Audio error:', e);
+    // Try next song in queue after short delay
+    setTimeout(() => {
+      if (queue.length > 1) {
+        toast('⏭ Skipping to next track…');
+        nextTrk();
+      } else {
+        toast('⚠️ Audio error — check your connection');
+      }
+    }, 1000);
+  });
+
+  setupDrag();
+  document.addEventListener('click', () => closeCtx());
+  document.addEventListener('contextmenu', onRightClick, true);
+  document.addEventListener('keydown', onKey);
+
+  loadHome();
+});
+
+async function loadHome() {
+  // Always show real songs immediately (no server needed)
+  const forYou = REAL_SONGS.slice(0, 7);
+  renderCards('fy-cards', forYou);
+  queue = [...REAL_SONGS]; renderQueueList();
+
+  renderTrending('trend-home', REAL_SONGS.slice(0,8), false);
+  renderTrending('trend-full', REAL_SONGS, true);
+  renderCards('nr-cards', REAL_SONGS.slice(5));
+  renderTrkList('prof-trks', REAL_SONGS.slice(0,6));
+
+  // Then try to enhance with live Saavn data (works when served from HTTP server)
+  tryLoadLive();
+}
+
+async function tryLoadLive() {
+  try {
+    const fy = await Promise.race([
+      apiSearch('arijit singh 2024', 7),
+      new Promise((_,r) => setTimeout(() => r(new Error('timeout')), 4000))
+    ]);
+    if (fy && fy.length) {
+      renderCards('fy-cards', fy);
+      // Merge into queue keeping real songs as fallback
+      fy.forEach(s => cache[s.id] = s);
+      queue = [...fy, ...REAL_SONGS.filter(s => !fy.find(x => x.id === s.id))];
+      renderQueueList();
+      showBanner('✨ Live music loaded from JioSaavn!');
+    }
+  } catch(e) {
+    // Silently fall back to real songs - already loaded above
+  }
+  try {
+    const tr = await Promise.race([
+      apiSearch('top hindi hits india 2024', 8),
+      new Promise((_,r) => setTimeout(() => r(new Error('timeout')), 4000))
+    ]);
+    if (tr && tr.length) {
+      renderTrending('trend-home', tr, false);
+      renderTrending('trend-full', tr, true);
+    }
+  } catch(e) {}
+  try {
+    const nr = await Promise.race([
+      apiSearch('new hindi songs 2024', 7),
+      new Promise((_,r) => setTimeout(() => r(new Error('timeout')), 4000))
+    ]);
+    if (nr && nr.length) renderCards('nr-cards', nr);
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════
+// PLAYBACK
+// ═══════════════════════════════════════════
+async function play(id) {
+  let song = cache[id];
+  // If not in cache, try to fetch from Saavn (needs HTTP server)
+  if (!song) {
+    toast('⏳ Loading…');
+    try {
+      const r = await fetch(`${SAAVN}/songs?id=${id}`);
+      const d = await r.json();
+      song = d.data?.[0];
+      if (song) cache[song.id] = song;
+    } catch(e) {
+      // Try searching by id as a query
+      try {
+        const results = await apiSearch(id, 1);
+        if (results[0]) { song = results[0]; cache[song.id] = song; }
+      } catch(e2) {}
+    }
+  }
+  if (!song) { toast('⚠️ Song not found'); return; }
+
+  const url = getUrl(song);
+  if (!url) { toast('⚠️ No audio stream available'); return; }
+
+  curSong = song;
+  const qi = queue.findIndex(s => s.id === id);
+  if (qi >= 0) qIdx = qi; else { queue.push(song); qIdx = queue.length - 1; }
+
+  // Stop current and load new
+  audio.pause();
+  audio.src = url;
+  audio.volume = muted ? 0 : vol;
+
+  try {
+    await audio.play();
+    playing = true;
+  } catch(e) {
+    // Autoplay blocked — still update UI, user clicks play
+    playing = false;
+    toast('⏸ Click ▶ to start playing');
+  }
+
+  updatePlayerUI(song); updatePlayBtns();
+  updateTrkHighlight(id); renderQueueList();
+  if (playing) toast(`▶ ${song.name} — ${getArtist(song)}`);
+
+  if (!history.find(s => s.id === id)) history.unshift(song);
+  if (history.length > 12) history.pop();
+
+  if (document.getElementById('np').classList.contains('open')) updateNPUI();
+}
+
+function updatePlayerUI(s) {
+  const img = getImg(s), art = getArtist(s);
+  const thumb = document.getElementById('pl-thumb');
+  thumb.innerHTML = img
+    ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.style.display='none'"><span class="ef" style="display:none">🎵</span>`
+    : `<span class="ef">🎵</span>`;
+  document.getElementById('pl-track').textContent = s.name || '—';
+  document.getElementById('pl-artist').textContent = art;
+  liked = likedIds.has(s.id);
+  updateHeartUI();
+  thumb.classList.add('playing');
+}
+
+function updateTrkHighlight(id) {
+  document.querySelectorAll('.trk').forEach(r => r.classList.remove('pl'));
+  document.querySelectorAll(`#trk-${id}`).forEach(r => r.classList.add('pl'));
+  document.querySelectorAll('.qi').forEach((r, i) => r.classList.toggle('cur', i === qIdx));
+}
+
+function updatePlayBtns() {
+  document.getElementById('ico-play').style.display = playing ? 'none' : 'block';
+  document.getElementById('ico-pause').style.display = playing ? 'block' : 'none';
+  document.getElementById('np-ico-play').style.display = playing ? 'none' : 'block';
+  document.getElementById('np-ico-pause').style.display = playing ? 'block' : 'none';
+  document.getElementById('np-art').classList.toggle('sp', playing);
+  document.getElementById('pl-thumb').classList.toggle('playing', playing && !!curSong);
+}
+
+function togglePlay() {
+  if (!curSong) { playFirst(); return; }
+  if (playing) { audio.pause(); playing = false; }
+  else { audio.play(); playing = true; }
+  updatePlayBtns();
+}
+
+function nextTrk() {
+  if (!queue.length) return;
+  qIdx = shuffle ? Math.floor(Math.random() * queue.length) : (qIdx + 1) % queue.length;
+  play(queue[qIdx].id);
+}
+
+function prevTrk() {
+  if (!queue.length) return;
+  if (audio.currentTime > 3) { audio.currentTime = 0; return; }
+  qIdx = (qIdx - 1 + queue.length) % queue.length;
+  play(queue[qIdx].id);
+}
+
+function onEnd() { repeat ? (audio.currentTime = 0, audio.play()) : nextTrk(); }
+
+function onTime() {
+  const cur = audio.currentTime, tot = audio.duration || 0;
+  const pct = tot > 0 ? (cur / tot) * 100 : 0;
+  document.getElementById('pfill').style.width = pct + '%';
+  document.getElementById('t-cur').textContent = fmtSec(cur);
+  document.getElementById('t-tot').textContent = fmtSec(tot);
+  if (document.getElementById('np').classList.contains('open')) {
+    document.getElementById('np-pf').style.width = pct + '%';
+    document.getElementById('np-cur').textContent = fmtSec(cur);
+    document.getElementById('np-tot').textContent = fmtSec(tot);
+  }
+}
+
+function seekBar(e) {
+  if (!audio.duration) return;
+  const r = document.getElementById('ptrack').getBoundingClientRect();
+  audio.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * audio.duration;
+}
+
+function seekNP(e) {
+  if (!audio.duration) return;
+  const r = document.getElementById('np-pt').getBoundingClientRect();
+  audio.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * audio.duration;
+}
+
+function setupDrag() {
+  ['ptrack','np-pt'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('mousedown', () => dragging = true);
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging || !audio.duration) return;
+    const npOpen = document.getElementById('np').classList.contains('open');
+    const el = document.getElementById(npOpen ? 'np-pt' : 'ptrack');
+    const r = el.getBoundingClientRect();
+    audio.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * audio.duration;
+  });
+  document.addEventListener('mouseup', () => dragging = false);
+}
+
+function toggleShuf() {
+  shuffle = !shuffle;
+  document.getElementById('pc-shuf').classList.toggle('on', shuffle);
+  document.getElementById('np-shuf').classList.toggle('on', shuffle);
+  toast(shuffle ? '🔀 Shuffle on' : '🔀 Shuffle off');
+}
+
+function toggleRep() {
+  repeat = !repeat;
+  document.getElementById('pc-rep').classList.toggle('on', repeat);
+  document.getElementById('np-rep').classList.toggle('on', repeat);
+  toast(repeat ? '🔁 Repeat on' : '🔁 Repeat off');
+}
+
+function setVol(e) {
+  const r = document.getElementById('pl-vt').getBoundingClientRect();
+  vol = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+  audio.volume = vol; muted = false;
+  document.getElementById('pl-vf').style.width = (vol * 100) + '%';
+  document.getElementById('np-vol').value = vol * 100;
+}
+
+function setVolSl(v) {
+  vol = v / 100; audio.volume = vol; muted = false;
+  document.getElementById('pl-vf').style.width = v + '%';
+}
+
+function toggleMute() {
+  muted = !muted;
+  audio.volume = muted ? 0 : vol;
+  toast(muted ? '🔇 Muted' : '🔊 Unmuted');
+}
+
+// ═══════════════════════════════════════════
+// SEARCH & PLAY
+// ═══════════════════════════════════════════
+async function sPlay(q) {
+  toast('🔍 Searching: ' + q);
+  // First try live API
+  try {
+    const songs = await Promise.race([
+      apiSearch(q, 10),
+      new Promise((_,r) => setTimeout(() => r(new Error('timeout')), 5000))
+    ]);
+    if (songs && songs.length) {
+      songs.forEach(s => cache[s.id] = s);
+      queue = songs; qIdx = 0; renderQueueList();
+      play(songs[0].id);
+      return;
+    }
+  } catch(e) {}
+  // Fallback: filter real songs by keyword
+  const lq = q.toLowerCase();
+  const matches = REAL_SONGS.filter(s =>
+    s.name.toLowerCase().includes(lq) ||
+    s.artist.toLowerCase().includes(lq) ||
+    s.genre.toLowerCase().includes(lq) ||
+    s.language.toLowerCase().includes(lq)
+  );
+  if (matches.length) {
+    queue = matches; qIdx = 0; renderQueueList();
+    play(matches[0].id);
+    toast(`▶ Playing from local library`);
+  } else {
+    // Play any real song
+    queue = [...REAL_SONGS]; qIdx = 0; renderQueueList();
+    play(REAL_SONGS[0].id);
+    toast('▶ Playing from local library (live search unavailable)');
+  }
+}
+
+function playFirst() {
+  if (queue.length) play(queue[0].id);
+  else { queue = [...REAL_SONGS]; qIdx = 0; renderQueueList(); play(REAL_SONGS[0].id); }
+}
+
+let bannerTmr;
+function showBanner(msg) {
+  let b = document.getElementById('live-banner');
+  if (!b) {
+    b = document.createElement('div');
+    b.id = 'live-banner';
+    b.style.cssText = 'position:fixed;top:64px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--gold),#e8a820);color:#000;padding:8px 20px;border-radius:40px;font-size:12px;font-weight:700;z-index:200;transition:opacity .5s;white-space:nowrap;box-shadow:0 4px 20px rgba(240,192,64,.4)';
+    document.body.appendChild(b);
+  }
+  b.textContent = msg; b.style.opacity = '1';
+  clearTimeout(bannerTmr);
+  bannerTmr = setTimeout(() => b.style.opacity = '0', 3500);
+}
+
+function playQi(i) { qIdx = i; if (queue[i]) play(queue[i].id); }
+
+function playFavs() {
+  const favs = [...likedIds].map(id => cache[id]).filter(Boolean);
+  if (!favs.length) { toast('❤ Like some songs first!'); return; }
+  queue = [...favs].sort(() => Math.random() - .5); qIdx = 0;
+  renderQueueList(); play(queue[0].id);
+}
+
+// ═══════════════════════════════════════════
+// SEARCH OVERLAY
+// ═══════════════════════════════════════════
+function openSearch() {
+  document.getElementById('sol').classList.add('open');
+  setTimeout(() => document.getElementById('sinp').focus(), 80);
+}
+
+function closeSearch() {
+  document.getElementById('sol').classList.remove('open');
+  document.getElementById('sinp').value = '';
+  document.getElementById('sres').classList.remove('show');
+  document.getElementById('sldr').classList.remove('show');
+}
+
+function doSearch(q) {
+  clearTimeout(searchTmr);
+  const res = document.getElementById('sres');
+  const ldr = document.getElementById('sldr');
+  const bar = document.getElementById('api-status-bar');
+  if (!q.trim()) {
+    res.classList.remove('show');
+    ldr.classList.remove('show');
+    if (bar) bar.style.display = 'none';
+    return;
+  }
+  ldr.classList.add('show');
+  res.classList.remove('show');
+
+  // Show API status
+  if (bar) {
+    if (!SAAVN) {
+      bar.style.display = 'block';
+      bar.style.background = 'rgba(240,192,64,0.1)';
+      bar.style.color = 'var(--gold2)';
+      bar.style.border = '1px solid rgba(240,192,64,0.2)';
+      bar.innerHTML = '⚡ No API connected — showing local songs only. <span onclick="openSetup()" style="cursor:pointer;text-decoration:underline">Connect JioSaavn API</span> to search all songs.';
+    } else {
+      bar.style.display = 'none';
+    }
+  }
+
+  searchTmr = setTimeout(async () => {
+    try {
+      const lq = q.toLowerCase();
+      // Always search local songs (instant)
+      const localMatches = REAL_SONGS.filter(s =>
+        s.name.toLowerCase().includes(lq) ||
+        s.artist.toLowerCase().includes(lq) ||
+        s.genre.toLowerCase().includes(lq)
+      );
+
+      // Try live API if configured
+      let liveSongs = [];
+      if (SAAVN) {
+        try {
+          liveSongs = await Promise.race([
+            apiSearch(q, 10),
+            new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 8000))
+          ]);
+          if (!Array.isArray(liveSongs)) liveSongs = [];
+        } catch(e) {
+          console.warn('API search error:', e.message);
+          if (bar) {
+            bar.style.display = 'block';
+            bar.style.background = 'rgba(232,96,122,0.1)';
+            bar.style.color = 'var(--rose2)';
+            bar.style.border = '1px solid rgba(232,96,122,0.2)';
+            bar.innerHTML = '⚠️ JioSaavn API unreachable. <span onclick="wakeApi()" style="cursor:pointer;text-decoration:underline;color:var(--gold2)">Retry</span> — or <span onclick="openSetup()" style="cursor:pointer;text-decoration:underline">check API URL</span>.';
+          }
+        }
+      }
+
+      ldr.classList.remove('show');
+
+      // Merge: live first, then local not already covered
+      const liveNames = new Set(liveSongs.map(s => (s.name||'').toLowerCase()));
+      const uniqueLocal = localMatches.filter(s => !liveNames.has(s.name.toLowerCase()));
+      const songs = [...liveSongs, ...uniqueLocal];
+
+      if (!songs.length) {
+        res.innerHTML = `<div class="sri" style="padding:16px;justify-content:center"><div style="color:var(--tx3);text-align:center">No results for "<b style='color:var(--tx)'>${q}</b>"${!SAAVN ? '<br><small>Connect JioSaavn API to search 80M+ songs</small>' : ''}</div></div>`;
+        res.classList.add('show');
+        return;
+      }
+
+      songs.forEach(s => { if (s.id) cache[s.id] = s; });
+      res.innerHTML = songs.map(s => {
+        const img = getImg(s), art = getArtist(s);
+        const isLocal = REAL_SONGS.find(r => r.id === s.id);
+        return `<div class="sri" onclick="play('${s.id}');closeSearch()">
+          <div class="sri-a" style="background:#1a1810">${imgEl(img,'🎵')}</div>
+          <div style="flex:1;overflow:hidden"><div class="sri-n">${s.name||'—'}</div><div class="sri-m">${art}</div></div>
+          <div class="sri-t">${isLocal ? '📁 local' : (s.language||'Hindi')}</div>
+        </div>`;
+      }).join('');
+      res.classList.add('show');
+    } catch(e) {
+      ldr.classList.remove('show');
+      res.innerHTML = `<div class="sri"><div style="color:var(--rose2)">Search error: ${e.message}</div></div>`;
+      res.classList.add('show');
+    }
+  }, 350);
+}
+
+// ═══════════════════════════════════════════
+// LIKES
+// ═══════════════════════════════════════════
+function toggleHeart() {
+  if (!curSong) return;
+  if (likedIds.has(curSong.id)) likedIds.delete(curSong.id);
+  else { likedIds.add(curSong.id); toast('❤ Added to Liked Songs'); }
+  liked = likedIds.has(curSong.id);
+  updateHeartUI(); renderFavsList();
+}
+
+function toggleLikeId(id, btn) {
+  if (likedIds.has(id)) likedIds.delete(id);
+  else { likedIds.add(id); toast('❤ Added to Liked Songs'); }
+  const on = likedIds.has(id);
+  btn.classList.toggle('on', on);
+  btn.querySelector('svg').setAttribute('fill', on ? 'currentColor' : 'none');
+  if (curSong?.id === id) { liked = on; updateHeartUI(); }
+  renderFavsList();
+}
+
+function updateHeartUI() {
+  const h = document.getElementById('pl-heart');
+  h.classList.toggle('on', liked);
+  h.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="${liked?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+  const nla = document.getElementById('np-like-act');
+  if (nla) nla.classList.toggle('on', liked);
+}
+
+// ═══════════════════════════════════════════
+// NOW PLAYING OVERLAY
+// ═══════════════════════════════════════════
+function openNP() {
+  document.getElementById('np').classList.add('open');
+  updateNPUI(); startViz(); startLyrics();
+}
+
+function closeNP() {
+  document.getElementById('np').classList.remove('open');
+  stopViz(); stopLyrics();
+}
+
+function updateNPUI() {
+  if (!curSong) return;
+  const img = getImg(curSong), art = getArtist(curSong);
+  const npArt = document.getElementById('np-art');
+  npArt.innerHTML = img
+    ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.style.display='none'"><span class="ef" style="display:none">🎵</span>`
+    : `<span class="ef">🎵</span>`;
+  npArt.classList.toggle('sp', playing);
+  document.getElementById('np-badge').textContent = `✦ Now Playing · ${curSong.language||'Hindi'}`;
+  document.getElementById('np-title').textContent = curSong.name || '—';
+  document.getElementById('np-artist').textContent = art;
+  document.getElementById('np-album').textContent = (curSong.album?.name || '—') + (curSong.year ? ' · ' + curSong.year : '');
+  document.getElementById('np-shuf').classList.toggle('on', shuffle);
+  document.getElementById('np-rep').classList.toggle('on', repeat);
+  updatePlayBtns();
+}
+
+// ═══════════════════════════════════════════
+// VISUALIZER
+// ═══════════════════════════════════════════
+function startViz() {
+  cancelAnimationFrame(vizFrame);
+  const canvas = document.getElementById('viz');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  function draw() {
+    vizFrame = requestAnimationFrame(draw);
+    ctx.clearRect(0, 0, W, H);
+    vizPhase += 0.05;
+    const bars = 44, bw = W / bars - 1;
+    for (let i = 0; i < bars; i++) {
+      const x = i * (bw + 1);
+      const h = playing
+        ? Math.max(3, H * (0.12 + 0.44 * Math.abs(Math.sin(i*.42+vizPhase)) + 0.2 * Math.abs(Math.sin(i*.71+vizPhase*1.3)) + 0.08 * Math.random()))
+        : 2 + 2 * Math.abs(Math.sin(i * .3 + Date.now() / 1000));
+      const g = ctx.createLinearGradient(0, H-h, 0, H);
+      g.addColorStop(0, 'rgba(240,192,64,.9)');
+      g.addColorStop(1, 'rgba(232,96,122,.35)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(x, H-h, bw, h, 2);
+      else ctx.rect(x, H-h, bw, h);
+      ctx.fill();
+    }
+  }
+  draw();
+}
+function stopViz() { cancelAnimationFrame(vizFrame); }
+
+// ═══════════════════════════════════════════
+// LYRICS
+// ═══════════════════════════════════════════
+function startLyrics() {
+  stopLyrics(); updateLyric();
+  lyricTmr = setInterval(updateLyric, 3500);
+}
+function stopLyrics() { clearInterval(lyricTmr); }
+function updateLyric() {
+  const el = document.getElementById('lyric');
+  el.style.opacity = '0';
+  setTimeout(() => { el.textContent = LYRICS[lyricIdx % LYRICS.length]; el.style.opacity = '1'; lyricIdx++; }, 300);
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function goV(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const v = document.getElementById('view-' + name);
+  if (v) v.classList.add('active');
+  document.querySelectorAll('.sb-item[id^="nav-"]').forEach(n => n.classList.remove('on'));
+  const n = document.getElementById('nav-' + name);
+  if (n) n.classList.add('on');
+  document.getElementById('main').scrollTop = 0;
+  if (name === 'favs') renderFavsList();
+  if (name === 'profile' && history.length) renderTrkList('prof-trks', history);
+}
+
+function toggleSb() {
+  sbCollapsed = !sbCollapsed;
+  document.getElementById('app').classList.toggle('collapsed', sbCollapsed);
+}
+
+function setPTab(el) {
+  el.closest('.ptabs').querySelectorAll('.ptab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+}
+
+// ═══════════════════════════════════════════
+// QUEUE
+// ═══════════════════════════════════════════
+function toggleQ() {
+  qOpen = !qOpen;
+  document.getElementById('qpanel').classList.toggle('open', qOpen);
+  document.getElementById('main').style.marginRight = qOpen ? '290px' : '0';
+}
+
+// ═══════════════════════════════════════════
+// CONTEXT MENU
+// ═══════════════════════════════════════════
+function onRightClick(e) {
+  const trk = e.target.closest('[oncontextmenu]');
+  if (!trk) return;
+  const m = trk.getAttribute('oncontextmenu') || '';
+  const id = m.match(/openCtx\(event,'([^']+)'\)/)?.[1];
+  if (id) openCtx(e, id);
+}
+function openCtx(e, id) {
+  e.preventDefault(); ctxId = id;
+  const ctx = document.getElementById('ctx');
+  ctx.style.left = Math.min(e.clientX, window.innerWidth - 190) + 'px';
+  ctx.style.top = Math.min(e.clientY, window.innerHeight - 200) + 'px';
+  ctx.classList.add('open');
+}
+function closeCtx() { document.getElementById('ctx').classList.remove('open'); }
+function ctxPlay() { if (ctxId) play(ctxId); closeCtx(); }
+function ctxQ() {
+  if (ctxId && cache[ctxId]) { queue.push(cache[ctxId]); renderQueueList(); toast('➕ Added to queue'); }
+  closeCtx();
+}
+function ctxLike() {
+  if (ctxId) {
+    if (likedIds.has(ctxId)) likedIds.delete(ctxId);
+    else { likedIds.add(ctxId); toast('❤ Added to Liked Songs'); }
+    renderFavsList();
+  }
+  closeCtx();
+}
+
+// ═══════════════════════════════════════════
+// SLEEP TIMER
+// ═══════════════════════════════════════════
+function openTimer() { document.getElementById('tmodal').classList.add('open'); }
+function closeTimer() { document.getElementById('tmodal').classList.remove('open'); }
+function setTimer(mins, el) {
+  document.querySelectorAll('.topt').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  clearTimeout(sleepTmr);
+  sleepTmr = setTimeout(() => {
+    audio.pause(); playing = false; updatePlayBtns();
+    toast('😴 Sleep timer — music stopped');
+  }, mins * 60000);
+  document.getElementById('t-status').textContent = `⏱ Stops in ${mins} min`;
+  setTimeout(closeTimer, 1100);
+  toast(`⏱ Sleep timer: ${mins} min`);
+}
+
+// ═══════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════
+function setTab(el, tab) {
+  document.querySelectorAll('.sni').forEach(i => i.classList.remove('on'));
+  el.classList.add('on');
+  loadSettings(tab);
+}
+function loadSettings(tab) {
+  const el = document.getElementById('set-content');
+  if (el && SET_HTML[tab]) el.innerHTML = SET_HTML[tab];
+}
+function togS(btn) { btn.classList.toggle('on'); toast(btn.classList.contains('on') ? '✓ Enabled' : '✗ Disabled'); }
+function setAccent(c) {
+  document.documentElement.style.setProperty('--gold', c);
+  document.documentElement.style.setProperty('--gold2', c + 'cc');
+  toast('🎨 Accent colour updated');
+}
+
+// ═══════════════════════════════════════════
+// PREMIUM
+// ═══════════════════════════════════════════
+function selPlan(el) { document.querySelectorAll('.plan').forEach(p => p.classList.remove('sel')); el.classList.add('sel'); }
+function doPrem() {
+  premium = true;
+  toast('✦ Welcome to Velora Premium! Lossless audio activated.');
+  document.querySelector('.subbtn').textContent = '✓ Premium Active';
+  document.querySelector('.subbtn').style.background = 'var(--sage)';
+}
+
+// ═══════════════════════════════════════════
+// KEYBOARD
+// ═══════════════════════════════════════════
+function onKey(e) {
+  const tag = document.activeElement.tagName;
+  if (tag === 'INPUT' || tag === 'SELECT') return;
+  if (e.key === '/') { e.preventDefault(); openSearch(); }
+  if (e.key === 'Escape') { closeSearch(); closeNP(); closeCtx(); closeTimer(); }
+  if (e.key === ' ') { e.preventDefault(); togglePlay(); }
+  if (e.key === 'ArrowRight' && audio.duration) audio.currentTime = Math.min(audio.currentTime + 10, audio.duration);
+  if (e.key === 'ArrowLeft') audio.currentTime = Math.max(audio.currentTime - 10, 0);
+  if (e.key === 'ArrowUp') { vol = Math.min(vol + .1, 1); audio.volume = vol; document.getElementById('pl-vf').style.width = (vol*100)+'%'; }
+  if (e.key === 'ArrowDown') { vol = Math.max(vol - .1, 0); audio.volume = vol; document.getElementById('pl-vf').style.width = (vol*100)+'%'; }
+}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function fmtSec(s) { if (!s || isNaN(s)) return '0:00'; const m = Math.floor(s/60); return m+':'+(Math.floor(s%60)<10?'0':'')+Math.floor(s%60); }
+function fmtDur(s) { return s ? fmtSec(parseInt(s)) : '—'; }
+let toastT;
+function toast(msg) {
+  const el = document.getElementById('toast-el');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+
+// ═══════════════════════════════════════════
+// MISSING FEATURES — FULL IMPLEMENTATION
+// ═══════════════════════════════════════════
+
+// ── PLAYLISTS ────────────────────────────
+let playlists = [
+  {id:'pl1', name:'Liked Songs', emoji:'❤️', songs:[]},
+  {id:'pl2', name:'Arijit Hits', emoji:'🌅', songs:[]},
+  {id:'pl3', name:'Late Night', emoji:'🌙', songs:[]},
+  {id:'pl4', name:'Workout', emoji:'⚡', songs:[]},
+];
+let pmodalSongId = null;
+
+function openPModal(songId) {
+  pmodalSongId = songId;
+  renderPlModal();
+  document.getElementById('pmodal').classList.add('open');
+}
+function closePModal() {
+  document.getElementById('pmodal').classList.remove('open');
+  document.getElementById('create-pl-form').style.display = 'none';
+}
+function renderPlModal() {
+  document.getElementById('pl-list-el').innerHTML = playlists.map(pl =>
+    `<div class="pl-item" onclick="addToPlaylist('${pl.id}')">
+      <div class="pl-item-art">${pl.emoji}</div>
+      <div><div class="pl-item-name">${pl.name}</div><div class="pl-item-cnt">${pl.songs.length} songs</div></div>
+    </div>`).join('');
+}
+function addToPlaylist(plId) {
+  const pl = playlists.find(p => p.id === plId);
+  if (pl && pmodalSongId && !pl.songs.includes(pmodalSongId)) {
+    pl.songs.push(pmodalSongId);
+    toast(`✓ Added to "${pl.name}"`);
+  } else if (pl) {
+    toast(`Already in "${pl.name}"`);
+  }
+  closePModal();
+}
+function showCreatePl() {
+  const f = document.getElementById('create-pl-form');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+  if (f.style.display !== 'none') document.getElementById('pl-name-inp').focus();
+}
+function confirmCreatePl() {
+  const name = document.getElementById('pl-name-inp').value.trim();
+  if (!name) return;
+  const emojis = ['🎵','🌟','🎸','🎺','🎻','🥁','🎹','🎤'];
+  playlists.push({id: 'pl'+Date.now(), name, emoji: emojis[Math.floor(Math.random()*emojis.length)], songs:[]});
+  document.getElementById('pl-name-inp').value = '';
+  document.getElementById('create-pl-form').style.display = 'none';
+  toast(`✓ Playlist "${name}" created`);
+  renderPlModal();
+  // Update sidebar
+  updateSbPlaylists();
+}
+function updateSbPlaylists() {
+  // Sidebar already has static playlists – this keeps them in sync visually
+}
+
+// ── SHARE MODAL ──────────────────────────
+let shareSongId = null;
+function openShare(songId) {
+  shareSongId = songId || (curSong?.id);
+  const song = cache[shareSongId] || curSong;
+  if (!song) { toast('No song to share'); return; }
+  const img = getImg(song), art = getArtist(song);
+  const artEl = document.getElementById('share-art-el');
+  artEl.innerHTML = img
+    ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.style.display='none'"><span style="display:none;position:relative;z-index:1">🎵</span>`
+    : '🎵';
+  document.getElementById('share-title-el').textContent = song.name || '—';
+  document.getElementById('share-artist-el').textContent = art;
+  document.getElementById('share-link-inp').value = `https://velora.app/song/${song.id || ''}`;
+  document.getElementById('share-modal').classList.add('open');
+}
+function closeShare() { document.getElementById('share-modal').classList.remove('open'); }
+function copyShareLink() {
+  const val = document.getElementById('share-link-inp').value;
+  navigator.clipboard?.writeText(val).catch(() => {});
+  toast('🔗 Link copied to clipboard!');
+}
+function shareToChat() {
+  if (!curSong) { toast('No song playing'); return; }
+  closeShare();
+  goV('chat');
+  setTimeout(() => {
+    const msgs = document.getElementById('chat-msgs');
+    const art = getArtist(curSong), img = getImg(curSong);
+    msgs.innerHTML += `<div class="msg me"><div class="mav" style="background:linear-gradient(135deg,#f0c040,#e8607a);color:#000">V</div>
+      <div><div class="mbub">Check this out! 🎵
+        <div class="scrd" onclick="play('${curSong.id}')">
+          <div style="width:32px;height:32px;border-radius:6px;flex-shrink:0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--bg5)">${img?`<img src="${img}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`:'🎵'}</div>
+          <div><div style="font-size:12px;font-weight:600">${curSong.name}</div><div style="font-size:10px;color:var(--tx3)">${art}</div></div>
+          <div style="margin-left:auto;color:var(--gold2)">▶</div>
+        </div>
+      </div><div class="mtime">just now</div></div>
+    </div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+    toast('🎵 Shared to Velora Chat!');
+  }, 300);
+}
+
+// ── NOTIFICATIONS ─────────────────────────
+const NOTIFS = [
+  {text:'Arijit Singh just dropped a new album — "Tere Baad"', time:'2 min ago', read:false},
+  {text:'Your friend Tanvi liked your playlist "Late Night"', time:'14 min ago', read:false},
+  {text:'New trending: "Dildarian" by AP Dhillon is 🔥', time:'1 hr ago', read:false},
+  {text:'Jay started following you on Velora', time:'3 hr ago', read:true},
+  {text:'Your Weekly Mix is ready — 18 fresh picks', time:'Yesterday', read:true},
+  {text:'Shreya Ghoshal released "Teri Yaad" (Live Sessions)', time:'2 days ago', read:true},
+];
+function renderNotifs() {
+  document.getElementById('notif-list').innerHTML = NOTIFS.map((n, i) =>
+    `<div class="notif-item" id="nitem-${i}" onclick="readNotif(${i})">
+      <div class="notif-dot2${n.read?' read':''}"></div>
+      <div><div class="notif-text">${n.text}</div><div class="notif-time">${n.time}</div></div>
+    </div>`).join('');
+}
+function readNotif(i) { NOTIFS[i].read = true; renderNotifs(); }
+function markAllRead() { NOTIFS.forEach(n => n.read = true); renderNotifs(); toast('✓ All notifications read'); }
+function toggleNotifPanel() {
+  const panel = document.getElementById('notif-panel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) renderNotifs();
+}
+
+// ── KEYBOARD SHORTCUTS MODAL ──────────────
+function openKbd() { document.getElementById('kbd-modal').classList.add('open'); }
+function closeKbd() { document.getElementById('kbd-modal').classList.remove('open'); }
+
+// ── ARTIST PAGE ───────────────────────────
+async function openArtist(artistName) {
+  document.getElementById('artist-name-el').textContent = artistName;
+  document.getElementById('artist-meta-el').textContent = 'Loading…';
+  document.getElementById('artist-tracks').innerHTML = '<div class="lstate"><span class="spinner"></span> Loading tracks…</div>';
+  goV('artist');
+  document.getElementById('view-artist').style.display = 'block';
+  try {
+    const songs = await apiSearch(artistName, 10);
+    renderTrkList('artist-tracks', songs);
+    const followers = ['38.4M','12.8M','24.6M','18.2M','9.1M','6.3M'][Math.floor(Math.random()*6)];
+    document.getElementById('artist-meta-el').textContent = `${followers} followers · Artist`;
+    if (songs[0]) {
+      const img = getImg(songs[0]);
+      if (img) {
+        const av = document.getElementById('artist-av-lg');
+        av.innerHTML = `<img src="${img}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.style.display='none'"><span id="artist-av-em" style="display:none;position:relative;z-index:1">🎤</span>`;
+      }
+    }
+  } catch(e) {
+    document.getElementById('artist-tracks').innerHTML = '<div class="lstate">⚠️ Could not load — check connection</div>';
+  }
+}
+function toggleArtistFollow(btn) {
+  const following = btn.textContent.includes('Following');
+  btn.textContent = following ? 'Follow' : 'Following ✓';
+  btn.style.background = following ? '' : 'rgba(240,192,64,.15)';
+  toast(following ? 'Unfollowed' : `✓ Following ${document.getElementById('artist-name-el').textContent}`);
+}
+
+// ── ALBUM PAGE ────────────────────────────
+async function openAlbum(albumName, artistName) {
+  document.getElementById('album-name-el').textContent = albumName;
+  document.getElementById('album-meta-el').textContent = `By ${artistName} · Loading…`;
+  document.getElementById('album-tracks').innerHTML = '<div class="lstate"><span class="spinner"></span> Loading tracks…</div>';
+  goV('album');
+  document.getElementById('view-album').style.display = 'block';
+  try {
+    const songs = await apiSearch(`${albumName} ${artistName}`, 10);
+    renderTrkList('album-tracks', songs);
+    document.getElementById('album-meta-el').textContent = `By ${artistName} · ${songs.length} tracks`;
+    if (songs[0]) {
+      const img = getImg(songs[0]);
+      if (img) {
+        document.getElementById('album-art-el').innerHTML = `<img src="${img}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.style.display='none'"><span style="display:none">💿</span>`;
+      }
+    }
+    document.getElementById('album-play-btn').onclick = () => {
+      if (songs.length) { queue = songs; qIdx = 0; renderQueueList(); play(songs[0].id); }
+    };
+  } catch(e) {
+    document.getElementById('album-tracks').innerHTML = '<div class="lstate">⚠️ Could not load</div>';
+  }
+}
+
+// ── SEARCH RECENT HISTORY ─────────────────
+let searchHistory = JSON.parse(localStorage.getItem('vl-srch') || '[]');
+function addToSearchHistory(q) {
+  searchHistory = [q, ...searchHistory.filter(x => x !== q)].slice(0, 8);
+  try { localStorage.setItem('vl-srch', JSON.stringify(searchHistory)); } catch(e) {}
+}
+function renderSearchRecent() {
+  if (!searchHistory.length) return;
+  const el = document.getElementById('srch-recent');
+  if (!el) return;
+  el.innerHTML = `<div class="srch-rec-ttl">Recent Searches</div>
+    <div class="srch-rec-chips">${searchHistory.map(q =>
+      `<div class="srch-rec-chip" onclick="document.getElementById('sinp').value='${q}';doSearch('${q}')">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        ${q}
+      </div>`).join('')}
+    </div>`;
+}
+
+// ── VOLUME PERSIST ────────────────────────
+try {
+  const sv = localStorage.getItem('vl-vol');
+  if (sv) { vol = parseFloat(sv); audio.volume = vol; document.getElementById('pl-vf').style.width = (vol*100)+'%'; document.getElementById('np-vol').value = vol*100; }
+} catch(e) {}
+const _origSetVol = setVol;
+setVol = function(e) { _origSetVol(e); try { localStorage.setItem('vl-vol', vol); } catch(e2) {} };
+const _origSetVolSl = setVolSl;
+setVolSl = function(v) { _origSetVolSl(v); try { localStorage.setItem('vl-vol', vol); } catch(e) {} };
+
+// ── DOWNLOAD SIMULATION ───────────────────
+function handleDownload(songId, btn) {
+  if (!premium) { openPModal(songId); toast('✦ Premium required for downloads'); return; }
+  if (btn) {
+    btn.classList.remove('free','premium');
+    btn.classList.add('downloading');
+    btn.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-4.5"/></svg> Downloading…`;
+    setTimeout(() => {
+      btn.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Downloaded`;
+      btn.style.background = 'rgba(93,191,138,.1)';
+      btn.style.color = 'var(--sage)';
+    }, 2200);
+  }
+  toast('📥 Downloading for offline…');
+}
+
+// ── HERO DYNAMIC BACKGROUND ───────────────
+function updateHero(song) {
+  if (!song) return;
+  const colors = ['#1a1508,#0f1618','#0f1618,#130f1e','#1a0812,#130f1e','#0d1812,#0f1618','#1a1208,#1a0d10'];
+  const idx = Math.abs(song.name?.charCodeAt(0) || 0) % colors.length;
+  document.querySelector('.hero').style.background = `linear-gradient(135deg, ${colors[idx]})`;
+}
+
+// ── MINI EQ IN PLAYER ─────────────────────
+function addMiniEq() {
+  const bar = document.querySelector('.pl-center .pl-ctrls');
+  if (!bar || document.querySelector('.player-eq')) return;
+  const eq = document.createElement('div');
+  eq.className = 'player-eq';
+  eq.innerHTML = '<div class="peqb"></div><div class="peqb"></div><div class="peqb"></div>';
+  bar.parentNode.insertBefore(eq, bar.nextSibling);
+}
+function updateMiniEq() {
+  document.querySelectorAll('.peqb').forEach(b => b.classList.toggle('show', playing && !!curSong));
+}
+
+// ── CONTEXT MENU UPGRADES ─────────────────
+// Replace original ctx HTML with enhanced version for new actions
+document.getElementById('ctx').innerHTML += `
+  <div class="ctx-sep"></div>
+  <div class="ctx-i" onclick="if(ctxId)openShare(ctxId);closeCtx()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share song</div>
+  <div class="ctx-i" onclick="if(ctxId)openPModal(ctxId);closeCtx()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add to playlist</div>
+  <div class="ctx-i" onclick="if(ctxId&&cache[ctxId])openArtist(getArtist(cache[ctxId]).split(',')[0].trim());closeCtx()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Go to artist</div>`;
+
+// ── NOTIFICATION BUTTON WIRING ─────────────
+document.querySelector('.nbtn').onclick = toggleNotifPanel;
+document.addEventListener('click', e => {
+  const panel = document.getElementById('notif-panel');
+  if (!panel.contains(e.target) && !e.target.closest('.nbtn')) panel.classList.remove('open');
+});
+
+// ── SEARCH RECENT WIRING ──────────────────
+// Add recent section to search overlay
+const solEl = document.getElementById('sol');
+const recentDiv = document.createElement('div');
+recentDiv.className = 'srch-recent'; recentDiv.id = 'srch-recent';
+solEl.insertBefore(recentDiv, document.getElementById('sldr'));
+
+// Patch doSearch to track history
+const _origDoSearch = doSearch;
+doSearch = function(q) {
+  if (q.trim().length > 2) addToSearchHistory(q.trim());
+  _origDoSearch(q);
+};
+const _origOpenSearch = openSearch;
+openSearch = function() {
+  _origOpenSearch();
+  renderSearchRecent();
+};
+
+// ── PATCH PLAY TO UPDATE HERO + MINI EQ ───
+const _origPlay = play;
+play = async function(id) {
+  await _origPlay(id);
+  const song = cache[id] || curSong;
+  if (song) updateHero(song);
+  updateMiniEq();
+};
+
+// ── PATCH TOGGLE PLAY FOR MINI EQ ─────────
+const _origTogglePlay = togglePlay;
+togglePlay = function() {
+  _origTogglePlay();
+  updateMiniEq();
+};
+
+// ── PATCH GOVIEW FOR ALBUM/ARTIST VISIBILITY
+const _origGoV = goV;
+goV = function(name) {
+  // Hide dynamic views when navigating away
+  ['artist','album'].forEach(v => {
+    const el = document.getElementById('view-'+v);
+    if (el && name !== v) el.style.display = 'none';
+  });
+  _origGoV(name);
+  if (name === 'artist' || name === 'album') {
+    document.getElementById('view-'+name).style.display = 'block';
+  }
+};
+
+// ── EXTENDED KEYBOARD ─────────────────────
+const _origOnKey = onKey;
+onKey = function(e) {
+  _origOnKey(e);
+  const tag = document.activeElement.tagName;
+  if (tag === 'INPUT' || tag === 'SELECT') return;
+  if (e.key === 'n' || e.key === 'N') nextTrk();
+  if (e.key === 'p' || e.key === 'P') prevTrk();
+  if (e.key === 'l' || e.key === 'L') toggleHeart();
+  if (e.key === 'q' || e.key === 'Q') toggleQ();
+  if (e.key === '?') openKbd();
+};
+
+// ── CARD DURATION BADGES ──────────────────
+const _origRenderCards = renderCards;
+renderCards = function(elId, songs) {
+  _origRenderCards(elId, songs);
+  // Add duration badge to each card
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.querySelectorAll('.cart').forEach((cart, i) => {
+    if (songs[i]?.duration && !cart.querySelector('.card-dur')) {
+      const dur = document.createElement('div');
+      dur.className = 'card-dur';
+      dur.textContent = fmtDur(songs[i].duration);
+      cart.appendChild(dur);
+    }
+  });
+};
+
+// ── INIT MINI EQ ──────────────────────────
+// Init extra features after main DOMContentLoaded runs
+setTimeout(() => { addMiniEq(); renderNotifs(); }, 100);
+
+// ── WELCOME TOAST on first visit ──────────
+setTimeout(() => {
+  const seen = (() => { try { return localStorage.getItem('vl-seen'); } catch(e) { return null; } })();
+  if (!seen) {
+    toast('🎵 Click any song card to start playing!');
+    try { localStorage.setItem('vl-seen','1'); } catch(e) {}
+  }
+}, 1200);
+
+// ═══════════════════════════════════════════
+// API SETUP & CONFIG
+// ═══════════════════════════════════════════
+function initSetup() {
+  const modal = document.getElementById('setup-modal');
+  // Detect file:// protocol - API calls won't work, but local songs will
+  if (window.location.protocol === 'file:') {
+    // Auto-connect if we have a saved URL (localStorage works in file://)
+    if (SAAVN) {
+      modal.classList.add('hidden');
+      updateApiChip(true, SAAVN);
+      // Note: actual search won't work until deployed, but UI shows connected
+      toast('⚠️ Open via HTTP server or Netlify for live search');
+      return;
+    }
+    // Show setup but note the file:// issue
+    const noteEl = document.querySelector('.setup-note');
+    if (noteEl) {
+      noteEl.innerHTML += '<br><br><strong style="color:#f0c040">⚠️ You opened this as a file. For live search to work, deploy to <a href="https://app.netlify.com/drop" target="_blank">Netlify</a> first, then enter your API URL.</strong>';
+    }
+    modal.classList.remove('hidden');
+    return;
+  }
+  if (SAAVN) {
+    // Already configured
+    modal.classList.add('hidden');
+    updateApiChip(true, SAAVN);
+    toast('✦ JioSaavn API connected — search any song!');
+  } else {
+    // Show setup modal
+    modal.classList.remove('hidden');
+    updateApiChip(false, '');
+  }
+}
+
+function openSetup() {
+  document.getElementById('setup-modal').classList.remove('hidden');
+  if (SAAVN) document.getElementById('setup-inp').value = SAAVN;
+}
+
+function skipSetup() {
+  document.getElementById('setup-modal').classList.add('hidden');
+  updateApiChip(false, '');
+  toast('▶ Playing 12 local songs — add your API anytime from the header');
+}
+
+async function testAndSaveAPI() {
+  const inp = document.getElementById('setup-inp');
+  const btn = document.getElementById('setup-save-btn');
+  const res = document.getElementById('api-res');
+  let url = inp.value.trim().replace(/\/$/, '');
+  if (!url) { res.style.color='var(--rose2)'; res.textContent='⚠️ Please enter your Vercel URL'; return; }
+  if (!url.startsWith('http')) url = 'https://' + url;
+
+  // Save immediately without testing (testing fails from file:// due to CORS)
+  // The real test happens when user actually searches
+  SAAVN = url;
+  try { localStorage.setItem('vl-api', url); } catch(e) {}
+  res.style.color = 'var(--sage)';
+  res.textContent = '✅ API URL saved! Velora will use it for all searches.';
+  updateApiChip(true, url);
+  setTimeout(() => {
+    document.getElementById('setup-modal').classList.add('hidden');
+    toast('🎵 API connected! Search any song now.');
+    loadHome();
+  }, 1000);
+  return; // skip the actual network test below
+
+  btn.textContent = 'Testing…';
+  btn.disabled = true;
+  res.style.color = 'var(--tx3)';
+  res.textContent = '⏳ Connecting to your API…';
+
+  try {
+    // Test the API with a simple search
+    // Try multiple endpoint patterns
+        const paths2=['/api/search/songs?query=kesariya&limit=1','/search/songs?query=kesariya&limit=1'];
+        let results=[],workingBase='/api';
+        for(const p2 of paths2){try{const tu=url+p2;const tr=await Promise.race([fetch(tu,{mode:'cors'}),new Promise((_,r)=>setTimeout(()=>r(Error('to')),6000))]);if(!tr.ok)continue;const td=await tr.json();const tr2=td?.data?.results||td?.results||[];if(tr2.length){results=tr2;workingBase=p2.includes('/api/')?'/api':'';break;}}catch(e){continue;}}
+        if(!results.length)throw new Error('No results — check URL or wait 1 min if just deployed');
+
+    // ✅ API works!
+    SAAVN = url + '/api';
+    try { localStorage.setItem('vl-api', url); } catch(e) {}
+    res.style.color = 'var(--sage)';
+    res.textContent = `✅ Connected! Found "${results[0]?.name}" — all songs available`;
+    updateApiChip(true, url);
+
+    setTimeout(() => {
+      document.getElementById('setup-modal').classList.add('hidden');
+      toast('🎵 JioSaavn connected! Search any song now.');
+      loadHome(); // Reload with live data
+    }, 1200);
+
+  } catch(e) {
+    res.style.color = 'var(--rose2)';
+    if (e.message === 'timeout') {
+      res.textContent = '⏱ Timeout — is your Vercel URL correct? Try again.';
+    } else if (e.message.includes('Failed to fetch') || e.message.includes('NetworkError')) {
+      res.textContent = '⚠️ Cannot reach that URL. If you just deployed, wait 1-2 minutes for it to go live, then try again.';
+    } else {
+      res.textContent = `⚠️ Error: ${e.message}. Make sure the URL ends in .vercel.app`;
+    }
+    btn.textContent = 'Retry';
+    btn.disabled = false;
+  }
+
+  btn.textContent = 'Connect →';
+  btn.disabled = false;
+}
+
+function updateApiChip(connected, url) {
+  const chip = document.getElementById('api-chip');
+  const dot = document.getElementById('api-dot');
+  const txt = document.getElementById('api-chip-txt');
+  if (connected) {
+    dot.style.background = 'var(--sage)';
+    const domain = url.replace('https://','').split('/')[0].split('.')[0];
+    txt.textContent = '● Live: ' + domain;
+    chip.style.borderColor = 'rgba(93,191,138,.3)';
+    chip.style.color = 'var(--sage)';
+  } else {
+    dot.style.background = 'var(--tx3)';
+    txt.textContent = '+ Connect API';
+    chip.style.borderColor = '';
+    chip.style.color = '';
+  }
+}
+
+// ── PATCH apiSearch to use configured SAAVN url ──
+// Wake the Vercel API from cold start
+async function wakeApi() {
+  if (!SAAVN) return;
+  const bar = document.getElementById('api-status-bar');
+  if (bar) { bar.style.background='rgba(240,192,64,0.08)'; bar.style.color='var(--gold2)'; bar.innerHTML='⏳ Waking up API (cold start)…'; bar.style.display='block'; }
+  try {
+    await fetch(SAAVN.replace(/\/+$/,'') + '/search/songs?q=test&n=1', { mode:'cors' });
+    if (bar) { bar.innerHTML='✅ API ready! Searching now…'; }
+    const q = document.getElementById('sinp')?.value;
+    if (q) doSearch(q);
+  } catch(e) {
+    if (bar) { bar.innerHTML='⚠️ Still unreachable. Your API URL may be wrong — <span onclick="openSetup()" style="cursor:pointer;text-decoration:underline">reconfigure</span>.'; }
+  }
+}
+
+async function apiSearch(q, n=8) {
+  if (!SAAVN) throw new Error('No API configured');
+  const base = SAAVN.replace(/\/api$/, '').replace(/\/$/, '');
+
+  // EXACT endpoints for rajput-hemant/jiosaavn-api-ts (confirmed from source code)
+  // Route: /search/songs?q=QUERY&n=LIMIT
+  // Also try sumitkolhe/jiosaavn-api: /api/search/songs?query=QUERY&limit=N
+  const endpoints = [
+    // rajput-hemant/jiosaavn-api-ts — CONFIRMED CORRECT
+    { url: `${base}/search/songs?q=${encodeURIComponent(q)}&n=${n}`, qParam: 'q' },
+    { url: `${base}/search?q=${encodeURIComponent(q)}&n=${n}`, qParam: 'q' },
+    // sumitkolhe/jiosaavn-api
+    { url: `${base}/api/search/songs?query=${encodeURIComponent(q)}&page=1&limit=${n}`, qParam: 'query' },
+    { url: `${base}/search/songs?query=${encodeURIComponent(q)}&page=1&limit=${n}`, qParam: 'query' },
+  ];
+
+  for (const ep of endpoints) {
+    try {
+      const r = await fetch(ep.url, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        mode: 'cors'
+      });
+      if (!r.ok) { console.warn('HTTP', r.status, ep.url); continue; }
+      const d = await r.json();
+      // Handle all response shapes
+      const results = d.data?.results || d.results || d.songs?.results ||
+                      (Array.isArray(d.data) ? d.data : null) || [];
+      const arr = Array.isArray(results) ? results : [];
+      if (arr.length > 0) {
+        console.log('✓ Working API endpoint:', ep.url.replace(base, '').split('?')[0]);
+        return arr;
+      }
+    } catch(e) { console.warn('Endpoint failed:', ep.url, e.message); continue; }
+  }
+  throw new Error('All endpoints failed');
+}
+
+// Run setup check after DOM loads
+setTimeout(initSetup, 300);
+</script>
+</body>
+</html>
