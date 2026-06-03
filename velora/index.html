@@ -1009,9 +1009,11 @@ const REAL_SONGS = [
 
 // Pre-load real songs into cache
 REAL_SONGS.forEach(s => {
-  // Normalize to match saavn format
-  s.downloadUrl = [{quality:'320kbps', url: s.url}];
-  s.image = [{quality:'500x500', url: s.img}];
+  // Keep original url/img for direct access in getUrl/getImg
+  // Also add normalized fields for compatibility
+  s.download_url = [{quality:'320kbps', link: s.url}];
+  s.downloadUrl  = [{quality:'320kbps', url:  s.url}];
+  s.image = [{quality:'500x500', link: s.img, url: s.img}];
   s.artists = {primary: [{name: s.artist}]};
   cache[s.id] = s;
 });
@@ -1129,28 +1131,33 @@ async function apiSearch(q, n=8) {
 }
 
 function getUrl(song) {
-  // Our REAL_SONGS have direct url property
-  if (song.url && !song.downloadUrl) return song.url;
-  const urls = song.downloadUrl || [];
-  for (const q of ['320kbps','160kbps','96kbps']) {
+  // REAL_SONGS: direct url string
+  if (song.url && typeof song.url === 'string') return song.url;
+  // rajput-hemant API: field=download_url, subfield=link
+  // sumitkolhe API:    field=downloadUrl,  subfield=url
+  const urls = song.download_url || song.downloadUrl || [];
+  if (!Array.isArray(urls) || !urls.length) return null;
+  for (const q of ['320kbps','160kbps','96kbps','128kbps']) {
     const u = urls.find(x => x.quality === q);
-    if (u?.url) return u.url;
+    if (u) return u.link || u.url || null;
   }
-  return urls[urls.length - 1]?.url || null;
+  const last = urls[urls.length - 1];
+  return last?.link || last?.url || null;
 }
 
 function getImg(song) {
-  // Handle both API formats
-  // rajput-hemant: image is array of {quality, url}
-  // Also handle direct string url
+  // REAL_SONGS: direct img string
+  if (song.img && typeof song.img === 'string') return song.img;
   if (typeof song.image === 'string') return song.image;
-  if (song.img) return song.img; // our REAL_SONGS format
   const imgs = song.image || [];
-  if (!imgs.length) return null;
-  // Try 500x500 first, then highest quality
-  const q500 = imgs.find(i => i.quality === '500x500' || i.quality === 'high');
-  if (q500?.url) return q500.url;
-  return imgs[imgs.length - 1]?.url || null;
+  if (!Array.isArray(imgs) || !imgs.length) return null;
+  // rajput-hemant uses {quality, link}, sumitkolhe uses {quality, url}
+  for (const q of ['500x500','150x150','50x50']) {
+    const img = imgs.find(i => i.quality === q);
+    if (img) return img.link || img.url || null;
+  }
+  const last = imgs[imgs.length - 1];
+  return last?.link || last?.url || null;
 }
 
 function getArtist(song) {
