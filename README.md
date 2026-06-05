@@ -77,7 +77,7 @@ Starting at **₹100/month**
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/velora.git
+git clone https://github.com/atharva2259/velora.git
 ```
 
 Navigate into the project:
@@ -132,18 +132,6 @@ Every visual element is crafted to evoke mood and atmosphere.
 Modern aesthetics paired with smooth interactions create a luxurious streaming environment.
 
 ---
-
-## 📸 Screenshots
-
-Add screenshots here after deployment:
-
-```md
-![Home Page](screenshots/home.png)
-
-![Music Player](screenshots/player.png)
-
-![Premium Section](screenshots/premium.png)
-```
 
 ---
 
