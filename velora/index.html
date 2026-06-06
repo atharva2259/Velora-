@@ -9,6 +9,7 @@
 </head>
 <body>
 <div class="app" id="app">
+<!-- SIDEBAR -->
 <aside class="sidebar" id="sb">
   <div class="sb-head">
     <div class="sb-logo">♪</div>
@@ -45,7 +46,9 @@
   </div>
 </aside>
 
+<!-- MAIN -->
 <main class="main" id="main">
+  <!-- HEADER -->
   <div class="hdr">
     <button class="hbtn" onclick="history.back()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
     <button class="hbtn" onclick="history.forward()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
@@ -54,7 +57,7 @@
       <input placeholder="Search real songs on JioSaavn…" readonly>
     </div>
     <div class="hdr-r">
-      <div class="nbtn" onclick="toast('🔔 No new notifications')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="ndot"></div></div>
+      <div class="nbtn" id="notif-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="ndot"></div></div>
       <div class="uchip" onclick="goV('profile')"><div class="uav">V</div><span style="font-size:12px;font-weight:500">Velora User</span></div>
       <div class="api-chip" id="api-chip" onclick="openSetup()" title="Configure JioSaavn API">
         <div class="api-dot" id="api-dot" style="background:var(--tx3)"></div>
@@ -63,6 +66,7 @@
     </div>
   </div>
 
+  <!-- HOME -->
   <div class="view active" id="view-home">
     <div class="hero" onclick="playFirst()">
       <div class="hero-glow"></div>
@@ -84,6 +88,7 @@
     <div style="height:24px"></div>
   </div>
 
+  <!-- PROFILE -->
   <div class="view" id="view-profile">
     <div class="ph">
       <div class="pav">V<div class="ponl"></div></div>
@@ -112,6 +117,7 @@
     <div style="height:24px"></div>
   </div>
 
+  <!-- FAVORITES -->
   <div class="view" id="view-favs">
     <div style="padding:28px 28px 20px;background:linear-gradient(180deg,rgba(232,96,122,.1) 0%,transparent 100%);border-bottom:1px solid var(--bdr)">
       <div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:800;margin-bottom:4px">❤ Liked Songs</div>
@@ -122,6 +128,7 @@
     <div style="height:24px"></div>
   </div>
 
+  <!-- CHAT -->
   <div class="view" id="view-chat">
     <div class="chat-layout">
       <div class="chat-main">
@@ -139,16 +146,19 @@
     </div>
   </div>
 
+  <!-- TRENDING -->
   <div class="view" id="view-trending">
     <div class="sec" style="padding-top:26px"><div class="sec-row"><div class="sec-title" style="font-size:22px">🔥 Trending in India</div></div><div id="trend-full"></div></div>
     <div style="height:24px"></div>
   </div>
 
+  <!-- GENRES -->
   <div class="view" id="view-genres">
     <div class="sec" style="padding-top:26px"><div class="sec-row"><div class="sec-title" style="font-size:22px">Browse Genres</div></div><div class="ggrid" id="genre-grid"></div></div>
     <div style="height:24px"></div>
   </div>
 
+  <!-- SETTINGS -->
   <div class="view" id="view-settings">
     <div class="set-grid">
       <div class="set-nav">
@@ -162,6 +172,7 @@
     </div>
   </div>
 
+  <!-- PREMIUM -->
   <div class="view" id="view-app">
     <div class="prem-hero">
       <div style="font-size:44px;margin-bottom:14px">✦</div>
@@ -184,11 +195,13 @@
     </div>
   </div>
 
+  <!-- FAQ -->
   <div class="view" id="view-faq">
     <div class="sec" style="padding-top:26px"><div class="sec-row"><div class="sec-title" style="font-size:22px">Frequently Asked Questions</div></div><div id="faq-list"></div></div>
   </div>
 </main>
 
+<!-- PLAYER BAR -->
 <div class="player">
   <div class="pl-left">
     <div class="pl-thumb" id="pl-thumb" onclick="openNP()" title="Now Playing"><span class="ef">🎵</span></div>
@@ -221,7 +234,10 @@
     </div>
   </div>
 </div>
-</div><div class="np" id="np">
+</div><!-- .app -->
+
+<!-- NOW PLAYING OVERLAY -->
+<div class="np" id="np">
   <button class="np-close" onclick="closeNP()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg></button>
   <div class="np-inner">
     <div style="display:flex;flex-direction:column;align-items:center;gap:16px">
@@ -262,32 +278,38 @@
   </div>
 </div>
 
+<!-- QUEUE -->
 <div class="qpanel" id="qpanel">
   <div class="q-hdr"><div class="q-title">Up Next</div><button style="background:none;border:none;cursor:pointer;color:var(--tx3);display:flex" onclick="toggleQ()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="ql" id="ql"></div>
 </div>
 
+<!-- SEARCH OVERLAY -->
 <div class="sol" id="sol" onclick="if(event.target===this)closeSearch()">
   <div class="sbox">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--tx3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input class="sinp" id="sinp" placeholder="Search songs… (type to search)" oninput="doSearch(this.value)" onkeydown="if(event.key==='Escape')closeSearch()">
     <button onclick="closeSearch()" style="background:none;border:none;color:var(--tx3);cursor:pointer;display:flex"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
+  <div class="srch-recent" id="srch-recent"></div>
   <div class="sldr" id="sldr">Searching JioSaavn… <span class="spinner"></span></div>
   <div class="sres" id="sres"></div>
 </div>
 
+<!-- CONTEXT MENU -->
 <div class="ctx" id="ctx">
   <div class="ctx-i" onclick="ctxPlay()"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Play now</div>
   <div class="ctx-i" onclick="ctxQ()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/></svg> Add to queue</div>
   <div class="ctx-i" onclick="ctxLike()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> Like song</div>
   <div class="ctx-sep"></div>
-  <div class="ctx-i" onclick="toast('➕ Added to playlist');closeCtx()">Add to playlist…</div>
-  <div class="ctx-i" onclick="toast('📤 Link copied!');closeCtx()">Share song</div>
+  <div class="ctx-i" onclick="if(ctxId)openPModal(ctxId);closeCtx()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add to playlist</div>
+  <div class="ctx-i" onclick="if(ctxId)openShare(ctxId);closeCtx()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share song</div>
+  <div class="ctx-i" onclick="if(ctxId&&cache[ctxId])openArtist(getArtist(cache[ctxId]).split(',')[0].trim());closeCtx()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Go to artist</div>
   <div class="ctx-sep"></div>
   <div class="ctx-i d" onclick="toast('🚫 Hidden');closeCtx()">Hide this song</div>
 </div>
 
+<!-- SLEEP TIMER -->
 <div class="modal-bg" id="tmodal">
   <div class="mbox">
     <button class="mcbtn" onclick="closeTimer()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -301,6 +323,7 @@
   </div>
 </div>
 
+<!-- ARTIST VIEW -->
 <div class="view" id="view-artist" style="display:none">
   <div class="artist-hero" id="artist-hero-el">
     <div class="artist-av-lg" id="artist-av-lg"><span id="artist-av-em">🎤</span></div>
@@ -318,6 +341,7 @@
   <div style="height:24px"></div>
 </div>
 
+<!-- ALBUM VIEW -->
 <div class="view" id="view-album" style="display:none">
   <div class="album-hero">
     <div class="album-art-lg" id="album-art-el"><span id="album-art-em">💿</span></div>
@@ -335,6 +359,7 @@
   <div style="height:24px"></div>
 </div>
 
+<!-- PLAYLIST MODAL -->
 <div class="pmodal" id="pmodal" onclick="if(event.target===this)closePModal()">
   <div class="pmodal-box">
     <button class="pmodal-close" onclick="closePModal()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -355,6 +380,7 @@
   </div>
 </div>
 
+<!-- SHARE MODAL -->
 <div class="share-modal" id="share-modal" onclick="if(event.target===this)closeShare()">
   <div class="share-box">
     <button class="pmodal-close" onclick="closeShare()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -378,6 +404,7 @@
   </div>
 </div>
 
+<!-- NOTIFICATION PANEL -->
 <div class="notif-panel" id="notif-panel">
   <div class="np-hdr">
     <div class="np-hdr-title">Notifications</div>
@@ -386,6 +413,7 @@
   <div class="notif-list" id="notif-list"></div>
 </div>
 
+<!-- KEYBOARD SHORTCUTS MODAL -->
 <div class="kbd-modal" id="kbd-modal" onclick="if(event.target===this)closeKbd()">
   <div class="kbd-box">
     <button class="pmodal-close" onclick="closeKbd()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -408,6 +436,7 @@
   </div>
 </div>
 
+<!-- API SETUP MODAL -->
 <div class="setup-modal" id="setup-modal">
   <div class="setup-box">
     <div class="setup-logo">♪</div>
@@ -427,7 +456,7 @@
       </div>
       <div class="ss">
         <div class="ssn">3</div>
-        <div class="sst"><strong>Paste it below</strong> — Velora will connect and you can search & play any song on JioSaavn instantly.</div>
+        <div class="sst"><strong>Paste it below</strong> — Velora will connect and you can search &amp; play any song on JioSaavn instantly.</div>
       </div>
     </div>
     <div class="api-res" id="api-res"></div>
@@ -445,6 +474,9 @@
 
 <div class="toast" id="toast-el"></div>
 <audio id="audio" preload="auto"></audio>
-<script src="script.js"></script>
+
+<!-- JS: data first, then app logic -->
+<script src="data.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
